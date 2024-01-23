@@ -47,6 +47,8 @@ public class QMemberEntity extends EntityPathBase<MemberEntity> {
 
     public final StringPath role = createString("role");
 
+    public final StringPath socialNum = createString("socialNum");
+
     public final StringPath username = createString("username");
 
     public QMemberEntity(String variable) {
