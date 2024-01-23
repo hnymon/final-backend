@@ -12,7 +12,7 @@ import com.web.service.MemberService;
 public class MemberController {
 	@Autowired
 	private MemberService memberService;
-	
+	// 안녕
 	// 아이디 중복확인
 	@PostMapping("/checkId")
 	public String checkId(@RequestBody JoinDTO joinDTO) {
