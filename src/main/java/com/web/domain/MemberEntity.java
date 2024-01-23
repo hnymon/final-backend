@@ -27,13 +27,14 @@ public class MemberEntity extends BaseEntity{
 	private String memberName; //회원 이름
 	
 	@Column(unique=true)
-	private String username; //회원 id
+	private String username; 	//회원 id
 	
-	private String password; //회원 pw
-	private String email; //회원 이메일
-	private String phoneNum; //회원 전화번호
-	private String membership; //회원 등급
+	private String password;	//회원 pw
+	private String email; 		//회원 이메일
+	private String phoneNum; 	//회원 전화번호
+	private String socialNum;	// 주민번호
+	private String membership; 	//회원 등급
 	private String role;
-//	private String locked; //정지 여부
-//	private String disabled; //탈퇴 여부
+//	private String locked; 		//정지 여부
+//	private String disabled; 	//탈퇴 여부
 }
