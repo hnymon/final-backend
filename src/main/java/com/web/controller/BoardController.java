@@ -33,13 +33,22 @@ public class BoardController {
 		List<BoardEntity> list = boardService.BoardList();
 		return list;
 	}
+	// 게시판 상세정보 
 	@GetMapping("/BoardDetail/{boardSeq}")
 	public BoardEntity BoardDetail(@PathVariable Long boardSeq){
-		System.out.println(boardService.BoardDetail(boardSeq));
+		System.out.println("test="+boardService.BoardDetail(boardSeq));
 		return boardService.BoardDetail(boardSeq);
 	}
+	// 삭제
 	@DeleteMapping("BoardDelete/{boardSeq}")
 	public void BoardDelete(@PathVariable Long boardSeq) {
 		 boardService.BoardDelete(boardSeq);
+	}
+	// 수정
+	@PostMapping("/Edit/{boardSeq}")
+	public BoardEntity Edit(@PathVariable Long boardSeq,@RequestBody BoardEntity boardEntity) {
+		System.out.println("번호 ="+boardSeq);
+		System.out.println("객체 ="+boardEntity);
+		return boardService.Edit(boardEntity);
 	}
 }  

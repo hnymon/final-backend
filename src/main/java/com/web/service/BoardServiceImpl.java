@@ -40,5 +40,10 @@ public class BoardServiceImpl implements BoardService{
 		// TODO Auto-generated method stub
 	boardRepository.deleteById(boardSeq);
 	}
+	@Override
+	public BoardEntity Edit(BoardEntity boardEntity) {
+		// TODO Auto-generated method stub
+		return boardRepository.save(boardEntity);
+	}
 	
 }
