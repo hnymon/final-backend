@@ -10,4 +10,4 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long>{
 
 	BoardEntity save(Long boardSeq);
 }
- 
+  

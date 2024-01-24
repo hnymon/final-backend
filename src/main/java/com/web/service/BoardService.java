@@ -12,7 +12,7 @@ public interface BoardService {
 	public BoardEntity BoardDetail(Long boardSeq);
 	// 게시판 글삭제 
 	public void BoardDelete(Long boardSeq);
-	
+	 
 	public BoardEntity Edit(BoardEntity boardEntity);
 	
 }

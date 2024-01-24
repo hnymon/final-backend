@@ -22,7 +22,7 @@ public class BoardController {
 	@Autowired
 	private BoardService boardService;
 	
-	@PostMapping("/BoardCreate")
+	@PostMapping("/BoardCreate") 
 	public BoardEntity BoardCreate(@RequestBody BoardEntity boardEntity) {
 		System.out.println(boardEntity);
 		return boardService.BoardCreate(boardEntity);

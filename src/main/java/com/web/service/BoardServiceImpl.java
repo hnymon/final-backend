@@ -34,7 +34,7 @@ public class BoardServiceImpl implements BoardService{
 			return boardEntity;
 		}
 		return null;
-	}
+	} 
 	@Override
 	public void BoardDelete(Long boardSeq) {
 		// TODO Auto-generated method stub
