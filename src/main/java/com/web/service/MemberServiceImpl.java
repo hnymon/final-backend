@@ -1,5 +1,7 @@
 package com.web.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class MemberServiceImpl implements MemberService{
 		if(username.equals("")) {
 			return "Empty";
 		}
+		// 해당 아이디로 검색했을 때 있으면 true 반환
 		Boolean result = memberRepository.existsByUsername(username);
 		if(result) {
 			return "Exist";
@@ -45,4 +48,16 @@ public class MemberServiceImpl implements MemberService{
 		memberRepository.save(member);
 		return "ok";
 	}
+	// 필요할 때 토큰 넘겨서 username(아이디)로 멤버 정보 불러오기
+	@Override
+	public MemberEntity getMemberInfo(String username) {
+		// TODO Auto-generated method stub
+		MemberEntity member = memberRepository.findByUsername(username);
+		if(member != null) {
+			// 아이디값과 일치하는 멤버객체를 반환
+			return member; 
+		}
+		return null;
+	}
+	
 }
