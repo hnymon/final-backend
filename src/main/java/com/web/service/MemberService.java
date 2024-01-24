@@ -1,9 +1,14 @@
 package com.web.service;
 
+import com.web.domain.MemberEntity;
 import com.web.dto.JoinDTO;
 
 public interface MemberService {
-	public String join(JoinDTO joinDTO);
+	// 아이디 중복확인
 	public String checkId(String username);
+	// 회원가입 
+	public String join(JoinDTO joinDTO);
+	// 필요할 때 토큰 넘겨서 username(아이디)로 멤버 정보 불러오기
+	public MemberEntity getMemberInfo(String username);
 	
 }
