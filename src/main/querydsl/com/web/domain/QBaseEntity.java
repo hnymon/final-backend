@@ -19,11 +19,7 @@ public class QBaseEntity extends EntityPathBase<BaseEntity> {
 
     public static final QBaseEntity baseEntity = new QBaseEntity("baseEntity");
 
-    public final StringPath createBy = createString("createBy");
-
     public final DateTimePath<java.util.Date> createDate = createDateTime("createDate", java.util.Date.class);
-
-    public final StringPath modifyBy = createString("modifyBy");
 
     public final DateTimePath<java.util.Date> modifyDate = createDateTime("modifyDate", java.util.Date.class);
 

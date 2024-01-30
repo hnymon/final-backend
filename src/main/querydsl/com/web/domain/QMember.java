@@ -10,19 +10,16 @@ import com.querydsl.core.types.Path;
 
 
 /**
- * QMemberEntity is a Querydsl query type for MemberEntity
+ * QMember is a Querydsl query type for Member
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QMemberEntity extends EntityPathBase<MemberEntity> {
+public class QMember extends EntityPathBase<Member> {
 
-    private static final long serialVersionUID = -1969266400L;
+    private static final long serialVersionUID = -1624053027L;
 
-    public static final QMemberEntity memberEntity = new QMemberEntity("memberEntity");
+    public static final QMember member = new QMember("member1");
 
     public final QBaseEntity _super = new QBaseEntity(this);
-
-    //inherited
-    public final StringPath createBy = _super.createBy;
 
     //inherited
     public final DateTimePath<java.util.Date> createDate = _super.createDate;
@@ -34,9 +31,6 @@ public class QMemberEntity extends EntityPathBase<MemberEntity> {
     public final NumberPath<Long> memberNum = createNumber("memberNum", Long.class);
 
     public final StringPath membership = createString("membership");
-
-    //inherited
-    public final StringPath modifyBy = _super.modifyBy;
 
     //inherited
     public final DateTimePath<java.util.Date> modifyDate = _super.modifyDate;
@@ -51,16 +45,16 @@ public class QMemberEntity extends EntityPathBase<MemberEntity> {
 
     public final StringPath username = createString("username");
 
-    public QMemberEntity(String variable) {
-        super(MemberEntity.class, forVariable(variable));
+    public QMember(String variable) {
+        super(Member.class, forVariable(variable));
     }
 
-    public QMemberEntity(Path<? extends MemberEntity> path) {
+    public QMember(Path<? extends Member> path) {
         super(path.getType(), path.getMetadata());
     }
 
-    public QMemberEntity(PathMetadata metadata) {
-        super(MemberEntity.class, metadata);
+    public QMember(PathMetadata metadata) {
+        super(Member.class, metadata);
     }
 
 }
