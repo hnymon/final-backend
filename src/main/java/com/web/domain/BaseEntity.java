@@ -19,16 +19,9 @@ import lombok.Getter;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 	
-	@CreatedBy
-	@Column(updatable = false)
-	private String createBy;
-	
 	@CreatedDate
 	@Column(updatable = false)
 	private Date createDate;
-	
-	@LastModifiedBy
-	private String modifyBy;
 	
 	@LastModifiedDate
 	private Date modifyDate;
