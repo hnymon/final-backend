@@ -14,25 +14,30 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.web.jwt.JwtFilter;
 import com.web.jwt.JWTUtil;
 import com.web.jwt.LoginFilter;
+import com.web.oauth2.handler.OAuth2LoginFailureHandler;
+import com.web.oauth2.handler.OAuth2LoginSuccessHandler;
+import com.web.oauth2.service.CustomOAuth2UserService;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 	
 	private final AuthenticationConfiguration authenticationConfiguration;
 	private final JWTUtil jwtUtil;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
-
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.jwtUtil = jwtUtil;
-    }
 	
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
@@ -43,6 +48,8 @@ public class SecurityConfig {
 	public BCryptPasswordEncoder bCryptPasswordEncoder() {
 		return new BCryptPasswordEncoder();
 	};
+	
+	
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -69,6 +76,7 @@ public class SecurityConfig {
 						}
 						
 					}));
+			
 		
 		//csrf disable
 		http
@@ -88,9 +96,16 @@ public class SecurityConfig {
 					.antMatchers("/admin").hasRole("ADMIN")
 					.anyRequest().permitAll()
 					);
+		
+		http
+			.oauth2Login()
+			.successHandler(oAuth2LoginSuccessHandler)
+			.failureHandler(oAuth2LoginFailureHandler)
+			.userInfoEndpoint().userService(customOAuth2UserService);
 
+		
         http
-        .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
+        	.addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
         
 		http
 			.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
@@ -99,6 +114,7 @@ public class SecurityConfig {
 		http
 			.sessionManagement((session) -> session
 					.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		
 		
 		return http.build();
 	}

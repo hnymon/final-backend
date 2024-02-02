@@ -1,12 +1,11 @@
 package com.web.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.web.domain.MemberEntity;
+import com.web.domain.Member;
+import com.web.domain.Role;
 import com.web.dto.JoinDTO;
 import com.web.repository.MemberRepository;
 @Service
@@ -38,21 +37,31 @@ public class MemberServiceImpl implements MemberService{
 	@Override
 	public String join(JoinDTO joinDTO) {
 		// TODO Auto-generated method stub
-		MemberEntity member = new MemberEntity();
-		member.setMemberName(joinDTO.getMemberName());
-		member.setUsername(joinDTO.getUsername());
-		member.setPassword(bCryptPasswordEncoder.encode(joinDTO.getPassword()));
-		member.setPhoneNum(joinDTO.getPhoneNum());
-		member.setMembership(joinDTO.getSocialNum());
-		member.setRole("ROLE_ADMIN");
+		Member member = Member.builder()
+				.memberName(joinDTO.getMemberName())
+				.username(joinDTO.getUsername())
+				.email(joinDTO.getEmail()+joinDTO.getDomain())
+				.password(bCryptPasswordEncoder.encode(joinDTO.getPassword()))
+				.phoneNum(joinDTO.getPhoneNum())
+				.membership(joinDTO.getSocialNum())
+				.role(Role.USER)
+				.build();
+		
+//		Member member = new Member();
+//		member.setMemberName(joinDTO.getMemberName());
+//		member.setUsername(joinDTO.getUsername());
+//		member.setPassword(bCryptPasswordEncoder.encode(joinDTO.getPassword()));
+//		member.setPhoneNum(joinDTO.getPhoneNum());
+//		member.setMembership(joinDTO.getSocialNum());
+//		member.setRole("ROLE_ADMIN");
 		memberRepository.save(member);
 		return "ok";
 	}
 	// 필요할 때 토큰 넘겨서 username(아이디)로 멤버 정보 불러오기
 	@Override
-	public MemberEntity getMemberInfo(String username) {
+	public Member getMemberInfo(String username) {
 		// TODO Auto-generated method stub
-		MemberEntity member = memberRepository.findByUsername(username);
+		Member member = memberRepository.findByUsername(username);
 		if(member != null) {
 			// 아이디값과 일치하는 멤버객체를 반환
 			return member; 
