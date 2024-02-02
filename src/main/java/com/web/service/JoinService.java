@@ -3,7 +3,8 @@ package com.web.service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.web.domain.MemberEntity;
+import com.web.domain.Member;
+import com.web.domain.Role;
 import com.web.dto.JoinDTO;
 import com.web.repository.MemberRepository;
 
@@ -23,6 +24,7 @@ public class JoinService {
 
         String username = joinDTO.getUsername();
         String password = joinDTO.getPassword();
+        String email = joinDTO.getEmail();
 
         Boolean isExist = memberRepository.existsByUsername(username);
 
@@ -30,13 +32,14 @@ public class JoinService {
 
             return;
         }
+        
+        Member member = Member.builder()
+        		.username(username)
+        		.password(bCryptPasswordEncoder.encode(password))
+        		.role(Role.USER)
+        		.email(email)
+        		.build();
 
-        MemberEntity data = new MemberEntity();
-
-        data.setUsername(username);
-        data.setPassword(bCryptPasswordEncoder.encode(password));
-        data.setRole("ROLE_ADMIN");
-
-        memberRepository.save(data);
+        memberRepository.save(member);
     }
 }

@@ -1,12 +1,22 @@
 package com.web.repository;
 
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 
-import com.web.domain.MemberEntity;
+import com.web.domain.Member;
+import com.web.domain.SocialType;
 
-public interface MemberRepository extends CrudRepository<MemberEntity, Long>{
+public interface MemberRepository extends JpaRepository<Member, Long>{
 
-	MemberEntity findByUsername(String username);
+	Member findByUsername(String username);
 
 	Boolean existsByUsername(String username);
+
+	Optional<Member> findBySocialTypeAndSocialId(SocialType socialType, String id);
+
+	Optional<Member> findByEmail(String email);
+	
+	Optional<Member> findByRefreshToken(String refreshToken);
 }
