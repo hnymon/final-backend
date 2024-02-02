@@ -29,7 +29,7 @@ public class QBoardEntity extends EntityPathBase<BoardEntity> {
 
     public final StringPath boardTitle = createString("boardTitle");
 
-    public final NumberPath<Long> boardViews = createNumber("boardViews", Long.class);
+    public final NumberPath<Integer> boardViews = createNumber("boardViews", Integer.class);
 
     public QBoardEntity(String variable) {
         super(BoardEntity.class, forVariable(variable));
