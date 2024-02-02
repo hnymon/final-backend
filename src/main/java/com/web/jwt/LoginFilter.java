@@ -8,6 +8,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,8 +18,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.web.dto.CustomUserDetails;
 import com.web.dto.LoginRequest;
+import com.web.jwt.dto.CustomUserDetails;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -61,6 +62,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
 
 			return authenticationManager.authenticate(authToken);
+			
 		} catch (IOException e) {
 			throw new AuthenticationServiceException("Failed to parse login request body", e);
 		}
@@ -70,17 +72,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authentication) {
 		CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-		String username = customUserDetails.getUsername();
+//		String username = customUserDetails.getUsername();
+//		
+//
+//		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+//		Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+//		GrantedAuthority auth = iterator.next();
+//
+//		String role = auth.getAuthority();
 
-		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-		Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-		GrantedAuthority auth = iterator.next();
-
-		String role = auth.getAuthority();
-
-		String token = jwtUtil.createJwt(username, role, 60 * 60 * 1000L);
-
-		response.addHeader("Authorization", "Bearer " + token);
+		String email = customUserDetails.getEmail();
+		String accessToken = jwtUtil.createAccessToken(email);
+		
+		response.addHeader(jwtUtil.getAccessHeader(), "Bearer " + accessToken);
 
 	}
 
