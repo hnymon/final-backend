@@ -24,7 +24,6 @@ public class BoardController {
 	
 	@PostMapping("/BoardCreate") 
 	public BoardEntity BoardCreate(@RequestBody BoardEntity boardEntity) {
-		System.out.println(boardEntity);
 		return boardService.BoardCreate(boardEntity);
 	}
 	//게시판 전체 리스트 출력
@@ -36,7 +35,6 @@ public class BoardController {
 	// 게시판 상세정보 
 	@GetMapping("/BoardDetail/{boardSeq}")
 	public BoardEntity BoardDetail(@PathVariable Long boardSeq){
-		System.out.println("test="+boardService.BoardDetail(boardSeq));
 		return boardService.BoardDetail(boardSeq);
 	}
 	// 삭제

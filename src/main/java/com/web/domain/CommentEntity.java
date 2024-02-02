@@ -28,7 +28,7 @@ public class CommentEntity {
 	@Column(name = "COMMENT_CONTENT")
 	private String commentContent;  // 댓글 내용
 	@Column(name = "COMMENT_DATE" ,insertable = false, updatable = false, columnDefinition = "date default sysdate")
-	private Date commentDate; 		// 댓글날짜
+	private Date commentDate;  		// 댓글날짜
 	@Column(name = "user_name") //FK
 	private String username; 		//댓글작성회원번호
 	@Column(name = "ISBN") // 책정보

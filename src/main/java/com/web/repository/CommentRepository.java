@@ -11,4 +11,4 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long>{
 	
 	 Page<CommentEntity> findByIsbn(Pageable pageable,String isbn); // String username 자리에 책고유번호 isbn 
 }
- 
+  

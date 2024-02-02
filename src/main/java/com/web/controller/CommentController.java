@@ -36,7 +36,7 @@ public class CommentController {
 	public CommentController(JWTUtil jwtUtil) {
 		this.jwtUtil = jwtUtil;
 	}
-
+ 
 	@PostMapping("/CommentArea")
 	public String CommentArea(@RequestBody CommentEntity commentEntity) {
 		System.out.println(commentEntity);

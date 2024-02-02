@@ -33,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
 		System.out.println(commentRepository.findByIsbn(pageable,isbn)); // fintBy뒤에는 대문자
 		return commentRepository.findByIsbn(pageable,isbn);
 	}
-
+ 
 	@Override
 	public void CommentDelete(Long commentId) {
 		// TODO Auto-generated method stub
