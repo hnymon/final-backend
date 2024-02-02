@@ -5,12 +5,15 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.web.domain.MemberEntity;
+import com.web.domain.Member;
+import com.web.domain.Role;
 import com.web.dto.JoinDTO;
 import com.web.jwt.JWTUtil;
 import com.web.service.MemberService;
@@ -48,12 +51,12 @@ public class MemberController {
             
             // 토큰을 이용해 사용자 정보 추출
             // 권한만 확인
-            String role = jwtUtil.getRole(jwtToken);
+            Role role = jwtUtil.getRole(jwtToken);
             map.put("Role", role);
             
             // 아이디로 멤버 정보 전체 반환
             String username = jwtUtil.getUsername(jwtToken);
-            MemberEntity member = memberService.getMemberInfo(username);
+            Member member = memberService.getMemberInfo(username);
             if(member != null) {
             	map.put("result", "Success");
             	map.put("member", member);
