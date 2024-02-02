@@ -31,6 +31,9 @@ public class BoardServiceImpl implements BoardService{
 		// findById 로 찾으면 타입이 optional 이된다  isPresent() -> boolean 타입으로 거짓이면 null
 		if(optional.isPresent()) {
 			BoardEntity boardEntity = optional.get();
+			boardEntity.setBoardViews(boardEntity.getBoardViews()+1); // 조회수 증가
+			boardRepository.save(boardEntity);
+			System.out.println(boardEntity);
 			return boardEntity;
 		}
 		return null;
