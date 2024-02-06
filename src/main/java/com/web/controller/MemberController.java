@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.web.domain.CheckMemberEmail;
 import com.web.domain.Member;
 import com.web.domain.Role;
 import com.web.dto.JoinDTO;
@@ -35,6 +36,28 @@ public class MemberController {
 		String res = memberService.checkId(joinDTO.getUsername());
 		return res;
 	}
+	
+	// 이메일 중복확인
+	@PostMapping("/checkEmail")
+	public String checkEmail(@RequestBody JoinDTO joinDTO) {
+		String res = memberService.checkEmail(joinDTO);
+		return res;
+	}
+	
+	// 이메일에 인증코드 전송
+	@PostMapping("/checkMemberEmail")
+	public String checkMemberEmail(@RequestBody JoinDTO joinDTO) {
+		String res = memberService.checkMemberEmail(joinDTO);
+		return res;
+	}
+	
+	// 전송했던 인증코드 확인
+	@PostMapping("/checkCode")
+	public String checkCode(@RequestBody JoinDTO joinDTO) {
+		String res = memberService.checkCode(joinDTO);
+		return res;
+	}
+	
 	// 회원가입
 	@PostMapping("/join")
 	public String join(@RequestBody JoinDTO joinDTO) {
