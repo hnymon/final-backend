@@ -28,8 +28,8 @@ public class CrawlingAladin {
 	private BookCrawlingRepository bookCrawlingRepository;
 	
 //	@Scheduled(cron = "0/30 * * * * *") // 30초
-	@Scheduled(cron = "0 0 */1 * * *") // 1시간
-//	@PostConstruct
+	@Scheduled(cron = "0 0 */1 * * *")  // 1시간
+//	@PostConstruct    					// 서버 재실행시 크롤링
 	public void testCrawling() {
 		List<BookCrawling> newBookList = bookCrawlingRepository.findAllByType("newBookAladin");
 		bookCrawlingRepository.deleteAllInBatch(newBookList);
@@ -39,7 +39,8 @@ public class CrawlingAladin {
 	        Document document = conn.get();
 	        int cnt = 0;
 	        // 신간도서
-	        Elements newBook = document.select(".bestseller_book"); 
+	        Elements newBook = document.select(".bestseller_book");
+	        System.out.println(newBook);
 	        for(Element element : newBook) {
 	        	cnt ++;
 	        	String bookName = element.select("h4").text();
@@ -65,7 +66,10 @@ public class CrawlingAladin {
 	        Elements newBook2 = firstUl.select("li");
 	        System.out.println("//////////////////////////////////////////////////////////////////\n"+newBook2); 
 	        for(Element element : newBook2) {
-	        	cnt ++;
+	        	if(element.select(".category_head").text().equals("잡지")) {
+	        		continue;
+	        	}
+	        	cnt ++; 
 	        	String bookName = element.select("h4").text();
 	        	String bookImg = element.select("img[data-src$=.jpg]").attr("data-src");
 	        	String bookInfoUrl = element.select("a").attr("href");
@@ -80,7 +84,7 @@ public class CrawlingAladin {
 	        	BookCrawling dto = new BookCrawling();
 	        	dto.setBookName(bookName);
 	        	dto.setImgUrl(bookImg);
-	        	dto.setIsbn13(isbn13); 
+	        	dto.setIsbn13(isbn13);
 	        	dto.setType("newBookAladin");
 	        	dto.setUniqueCol(dto.getType()+cnt);
 	        	bookCrawlingRepository.save(dto);

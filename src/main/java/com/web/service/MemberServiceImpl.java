@@ -157,7 +157,6 @@ public class MemberServiceImpl implements MemberService{
 		}
 		return "Failure";
 	}
-
 	// 회원가입
 	@Override
 	public String join(JoinDTO joinDTO) {
@@ -175,6 +174,33 @@ public class MemberServiceImpl implements MemberService{
 		memberRepository.save(member);
 		return "ok";
 	}
+	// 멤버DTO 가 포함된 DTO 를 만들자 > ex) 수정된 정보 + memberDTO >> 
+	// 회원정보 수정
+	@Override
+	public String editMemberInfo(JoinDTO joinDTO) {
+		// TODO Auto-generated method stub
+		Optional<Member> optional =  memberRepository.findById(joinDTO.getMemberNum());
+		System.out.println("impl");
+		System.out.println(joinDTO); // 수정 할 정보
+		Member member = null;
+		if(optional.isPresent()) { // 해당 이메일로 조회시 아이디 존재
+			member = optional.get(); // 수정 전 정보
+		}
+		boolean checkSamePassword = bCryptPasswordEncoder.matches(joinDTO.getPassword(), member.getPassword());
+		System.out.println(checkSamePassword);
+		if(checkSamePassword) {
+			System.out.println("진짜로");
+			return "Equal Password";
+		}
+		member.setMemberName(joinDTO.getMemberName());
+		member.setPassword(bCryptPasswordEncoder.encode(joinDTO.getPassword()));
+		member.setEmail(joinDTO.getEmail());
+		member.setPhoneNum(joinDTO.getPhoneNum());
+		System.out.println("수정전" + member);
+		memberRepository.save(member);
+		return "Success";
+	}
+
 	// 필요할 때 토큰 넘겨서 username(아이디)로 멤버 정보 불러오기
 	@Override
 	public Member getMemberInfo(String username) {
