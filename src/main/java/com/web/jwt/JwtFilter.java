@@ -1,6 +1,7 @@
 package com.web.jwt;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -32,10 +33,11 @@ public class JwtFilter extends OncePerRequestFilter {
     
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
     
-    private MemberRepository mRepo;
-
-    public JwtFilter(JWTUtil jwtUtil) {
+    private final MemberRepository mRepo;
+    
+    public JwtFilter(JWTUtil jwtUtil, MemberRepository mRepo) {
         this.jwtUtil = jwtUtil;
+        this.mRepo = mRepo;
     }
     
 	@Override
@@ -140,8 +142,8 @@ public class JwtFilter extends OncePerRequestFilter {
 		log.info("checkAccessTokenAndAuthentication() 호출");
 		jwtUtil.extractAccessToken(request)
 		.filter(jwtUtil::isTokenValid)
-		.ifPresent(accessToken -> jwtUtil.getEmail(accessToken)
-		.ifPresent(email -> mRepo.findByEmail(email)
+		.ifPresent(accessToken -> jwtUtil.getEmailOpt(accessToken)
+		.ifPresent(email -> Optional.of(mRepo.findByEmail(email))
 		.ifPresent(this::saveAuthentication)));
 		
 		filterChain.doFilter(request, response);

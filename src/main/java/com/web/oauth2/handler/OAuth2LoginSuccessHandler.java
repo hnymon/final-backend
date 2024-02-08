@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,14 +39,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             if(oAuth2User.getRole() == Role.GUEST) {
                 String accessToken = jwtUtil.createAccessToken(oAuth2User.getEmail());
                 String refreshToken = jwtUtil.createRefreshToken();
-//                response.addHeader(jwtUtil.getAccessHeader(), "Bearer " + accessToken);
                 System.out.println("엑세스토큰 발급 완료");
-//                response.sendRedirect("/signup"); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
 
                 jwtUtil.sendAccessAndRefreshToken(response, accessToken, null);
-                Member findMember = mRepo.findByEmail(oAuth2User.getEmail())
+                Member findMember = Optional.of(mRepo.findByEmail(oAuth2User.getEmail()))
                                 .orElseThrow(() -> new IllegalArgumentException("이메일에 해당하는 유저가 없습니다."));
                 findMember.authorizeUser();
+                findMember.updateRefreshToken(refreshToken);
                 mRepo.save(findMember);
                 
                 response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000/login/callback")
@@ -54,9 +54,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 		.build()
                 		.encode(StandardCharsets.UTF_8)
                 		.toUriString());
+                
             } else {
             	String accessToken = jwtUtil.createAccessToken(oAuth2User.getEmail());
             	String refreshToken = jwtUtil.createRefreshToken();
+            	Member findMember = mRepo.findByEmail(oAuth2User.getEmail());
+            	findMember.updateRefreshToken(refreshToken);
             	response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000/login/callback")
                 		.queryParam("accessToken", accessToken)
                 		.queryParam("refreshToken", refreshToken)
