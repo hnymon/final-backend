@@ -1,9 +1,16 @@
 package com.web.service;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-@Service
-public class CartService {
+import org.springframework.http.ResponseEntity;
+
+import com.web.dto.CartItemDto;
+import com.web.dto.OrderDto;
+
+public interface CartService {
 	
+	public List<CartItemDto> cartList(String token);
+	public void addCart(CartItemDto cartdto, String token);
+	public ResponseEntity<String> deleteCartitem(String isbn);
 	
 }

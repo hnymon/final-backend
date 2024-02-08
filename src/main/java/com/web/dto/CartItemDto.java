@@ -1,7 +1,6 @@
 package com.web.dto;
 
-
-import com.web.domain.BookImg;
+import com.web.domain.CartItem;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CartItemDto {
-	private String title;
-	private String author;
-	private int price;
-	private int discount;
-	private BookImg bookImg;
+	private String isbn13;
 	private Long count;
+	
+	public CartItemDto(CartItem cartItem) {
+		isbn13 = cartItem.getIsbn13();
+		count = cartItem.getCount();
+	}
 }

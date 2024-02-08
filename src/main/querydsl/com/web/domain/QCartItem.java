@@ -24,8 +24,6 @@ public class QCartItem extends EntityPathBase<CartItem> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
-    public final QBook Book;
-
     public final QCart cart;
 
     public final NumberPath<Long> count = createNumber("count", Long.class);
@@ -34,6 +32,8 @@ public class QCartItem extends EntityPathBase<CartItem> {
     public final DateTimePath<java.util.Date> createDate = _super.createDate;
 
     public final NumberPath<Long> Id = createNumber("Id", Long.class);
+
+    public final StringPath isbn13 = createString("isbn13");
 
     //inherited
     public final DateTimePath<java.util.Date> modifyDate = _super.modifyDate;
@@ -56,8 +56,7 @@ public class QCartItem extends EntityPathBase<CartItem> {
 
     public QCartItem(Class<? extends CartItem> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.Book = inits.isInitialized("Book") ? new QBook(forProperty("Book"), inits.get("Book")) : null;
-        this.cart = inits.isInitialized("cart") ? new QCart(forProperty("cart")) : null;
+        this.cart = inits.isInitialized("cart") ? new QCart(forProperty("cart"), inits.get("cart")) : null;
     }
 
 }
