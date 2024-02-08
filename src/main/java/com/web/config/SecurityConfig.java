@@ -24,6 +24,7 @@ import com.web.jwt.LoginFilter;
 import com.web.oauth2.handler.OAuth2LoginFailureHandler;
 import com.web.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.web.oauth2.service.CustomOAuth2UserService;
+import com.web.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +35,7 @@ public class SecurityConfig {
 	
 	private final AuthenticationConfiguration authenticationConfiguration;
 	private final JWTUtil jwtUtil;
+	private final MemberRepository mRepo;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -105,7 +107,7 @@ public class SecurityConfig {
 
 		
         http
-        	.addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
+        	.addFilterBefore(new JwtFilter(jwtUtil, mRepo), LoginFilter.class);
         
 		http
 			.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);

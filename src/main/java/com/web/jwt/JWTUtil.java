@@ -57,7 +57,7 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
     }
     
-    public Optional<String> getEmail(String token) {
+    public Optional<String> getEmailOpt(String token) {
     	try {
     		return Optional.ofNullable(Jwts.parser()
     				.verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
@@ -67,6 +67,10 @@ public class JWTUtil {
     		log.error("액세스 토큰이 유효하지 않습니다.");
             return Optional.empty();
     	}
+    }
+    
+    public String getEmail(String token) {
+    	return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
     
 
@@ -183,7 +187,7 @@ public class JWTUtil {
      * RefreshToken DB 저장(업데이트)
      */
     public void updateRefreshToken(String email, String refreshToken) {
-        mRepo.findByEmail(email)
+        Optional.of(mRepo.findByEmail(email))
                 .ifPresentOrElse(
                         user -> user.updateRefreshToken(refreshToken),
                         () -> new Exception("일치하는 회원이 없습니다.")

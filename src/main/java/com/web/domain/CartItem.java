@@ -11,10 +11,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @SequenceGenerator(name="CART_ITEM_SEQ_GENERATOR", sequenceName="CART_ITEM_SEQ", allocationSize = 1)
 @Table(name = "cart_item")
 public class CartItem extends BaseEntity{
@@ -23,14 +29,17 @@ public class CartItem extends BaseEntity{
 	@Column(name = "CART_ITEM_ID")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CART_ITEM_SEQ_GENERATOR" )
 	private Long Id;
+
+	private String isbn13;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CART_ID")
 	private Cart cart;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="BOOK_ID")
-	private Book Book;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name="BOOK_ID")
+//	private Book Book;
+	
 	
 	private Long count;//수량
 	
