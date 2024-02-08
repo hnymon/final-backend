@@ -51,6 +51,11 @@ public class CustomUserDetails  implements UserDetails {
     	System.out.println("getEmail "+memberEntity.getEmail());
         return memberEntity.getEmail();
     }
+    
+    public Long getMemberNum() {
+    	System.out.println("getMemberNum "+memberEntity.getMemberNum());
+    	return memberEntity.getMemberNum();
+    }
 
     @Override
     public boolean isAccountNonExpired() {

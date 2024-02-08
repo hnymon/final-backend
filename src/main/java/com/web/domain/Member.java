@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -53,7 +54,10 @@ public class Member extends BaseEntity{
     private SocialType socialType; // KAKAO, NAVER, GOOGLE  
     
     private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
-    private String refreshToken; // 리프레시 토큰  
+    private String refreshToken; // 리프레시 토큰 
+    
+    @OneToOne(mappedBy = "member")
+    private Cart cart;
     
 //	private String locked; 		//정지 여부
 //	private String disabled; 	//탈퇴 여부
