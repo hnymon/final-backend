@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.dto.LoginRequest;
@@ -82,7 +83,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 //		String role = auth.getAuthority();
 
 		String email = customUserDetails.getEmail();
-		String accessToken = jwtUtil.createAccessToken(email);
+		Long memberNum = customUserDetails.getMemberNum();
+		String accessToken = jwtUtil.createAccessToken(memberNum);
 		
 		response.addHeader(jwtUtil.getAccessHeader(), "Bearer " + accessToken);
 
