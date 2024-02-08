@@ -37,7 +37,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
             // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
             if(oAuth2User.getRole() == Role.GUEST) {
-                String accessToken = jwtUtil.createAccessToken(oAuth2User.getEmail());
+                String accessToken = jwtUtil.createAccessToken(oAuth2User.getMemberNum());
                 String refreshToken = jwtUtil.createRefreshToken();
                 System.out.println("엑세스토큰 발급 완료");
 
@@ -56,7 +56,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 		.toUriString());
                 
             } else {
-            	String accessToken = jwtUtil.createAccessToken(oAuth2User.getEmail());
+            	String accessToken = jwtUtil.createAccessToken(oAuth2User.getMemberNum());
             	String refreshToken = jwtUtil.createRefreshToken();
             	Member findMember = mRepo.findByEmail(oAuth2User.getEmail());
             	findMember.updateRefreshToken(refreshToken);

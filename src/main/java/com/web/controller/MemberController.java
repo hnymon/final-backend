@@ -18,12 +18,18 @@ import com.web.domain.Role;
 import com.web.dto.JoinDTO;
 import com.web.jwt.JWTUtil;
 import com.web.service.MemberService;
+import com.web.service.TokenService;
 
 @RestController
 public class MemberController {
 	// 회원정보 서비스
 	@Autowired
 	private MemberService memberService;
+	
+	@Autowired
+	private TokenService tockenService;
+	
+	
 	// 토큰을 사용하여 회원정보 불러오기 위해 선언
 	private final JWTUtil jwtUtil;
     public MemberController(JWTUtil jwtUtil) {
@@ -89,4 +95,30 @@ public class MemberController {
         }
         return map;
     }
+	
+	// 토큰으로 정보 불러오기 
+	@PostMapping("/getMemberInfo")
+	public Map<String, Object> getMemberInfo(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+		Map<String, Object> map = new HashMap<>();
+		boolean validTocken = tockenService.existMember(token);
+		if(validTocken) {
+			Member currentMember = tockenService.getMemberByMemberNum(token);
+			System.out.println(currentMember);
+			map.put("result", "Success");
+			map.put("currentMember", currentMember);
+			System.out.println("성공");
+		} else {
+			map.put("result", "Failure");
+			System.out.println("실패");
+		}
+		return map;
+	}
+	
+	// 회원정보 수정
+	@PostMapping("/editMemberInfo")
+	public String editMemberInfo(@RequestBody JoinDTO joinDTO) {
+		// 멤버넘버로 찾자
+		String res = memberService.editMemberInfo(joinDTO);
+		return res;
+	}
 }

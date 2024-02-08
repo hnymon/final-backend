@@ -123,7 +123,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	    mRepo.findByRefreshToken(refreshToken)
 	            .ifPresent(member -> {
 	                String reIssuedRefreshToken = reIssueRefreshToken(member);
-	                jwtUtil.sendAccessAndRefreshToken(response, jwtUtil.createAccessToken(member.getEmail()),
+	                jwtUtil.sendAccessAndRefreshToken(response, jwtUtil.createAccessToken(member.getMemberNum()),
 	                        reIssuedRefreshToken);
 	            });
 	}

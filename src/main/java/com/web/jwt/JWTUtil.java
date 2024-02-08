@@ -68,7 +68,18 @@ public class JWTUtil {
             return Optional.empty();
     	}
     }
-    
+    // 추가
+    public Optional<Long> getMemberNum(String token) {
+    	try {
+    		return Optional.ofNullable(Jwts.parser()
+    				.verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
+    				.get("memberNum", Long.class));
+    		
+    	}catch(Exception e) {
+    		log.error("액세스 토큰이 유효하지 않습니다.");
+    		return Optional.empty();
+    	}
+    }
     public String getEmail(String token) {
     	return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
@@ -110,10 +121,10 @@ public class JWTUtil {
                 .compact();
     }
     
-    public String createAccessToken(String email) {
+    public String createAccessToken(Long memberNum) {
     	return Jwts.builder()
     			.subject(ACCESS_TOKEN_SUBJECT)
-    			.claim("email", email)
+    			.claim("memberNum", memberNum)
     			.issuedAt(new Date(System.currentTimeMillis()))
     			.expiration(new Date(System.currentTimeMillis() + accessTokenExpirationPeriod))
     			.signWith(secretKey)
@@ -186,8 +197,8 @@ public class JWTUtil {
     /**
      * RefreshToken DB 저장(업데이트)
      */
-    public void updateRefreshToken(String email, String refreshToken) {
-        Optional.of(mRepo.findByEmail(email))
+    public void updateRefreshToken(Long memberNum, String refreshToken) {
+        Optional.of(mRepo.findById(memberNum).get())
                 .ifPresentOrElse(
                         user -> user.updateRefreshToken(refreshToken),
                         () -> new Exception("일치하는 회원이 없습니다.")
