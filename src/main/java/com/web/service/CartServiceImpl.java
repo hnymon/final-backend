@@ -38,7 +38,7 @@ public class CartServiceImpl implements CartService {
 	@Override
 	public List<CartItemDto> cartList(String token) {
 		if(tService.existMember(token)) {
-			Member member = tService.getMember(token);
+			Member member = tService.getMemberByMemberNum(token);
 			Cart cart = cRepo.findByMember(member);
 			List<CartItemDto> cartItems = cart.getCartItems().stream()
 					.map(e -> new CartItemDto(e))
@@ -55,7 +55,7 @@ public class CartServiceImpl implements CartService {
 	public void addCart(CartItemDto cartdto, String token) {
 		
 		if (tService.existMember(token)) {
-			Member member = tService.getMember(token);
+			Member member = tService.getMemberByMemberNum(token);
             
             Cart cart = cRepo.findByMember(member);
             
@@ -68,7 +68,7 @@ public class CartServiceImpl implements CartService {
             }
             
          // 중복 체크
-            if (!isDuplicateCartItem(cartdto.getIsbn13())) {
+            if (!isDuplicateCartItem(cartdto.getIsbn13(), cart)) {
                 // 중복되지 않는 경우에만 CartItem 추가
             	CartItem cartItem = CartItem.builder()
                         .isbn13(cartdto.getIsbn13())
@@ -88,8 +88,8 @@ public class CartServiceImpl implements CartService {
 	}
 	
     // 중복 체크 메서드
-    private boolean isDuplicateCartItem(String isbn13) {
-    	CartItem cartItem = itemRepo.findByIsbn13(isbn13);
+    private boolean isDuplicateCartItem(String isbn13, Cart cart) {
+    	CartItem cartItem = itemRepo.findByIsbn13AndCart(isbn13, cart);
         if(cartItem == null) {
         	return false;
         }
@@ -101,8 +101,7 @@ public class CartServiceImpl implements CartService {
 	public ResponseEntity<String> deleteCartitem(String isbn) {
 
 		try {
-			CartItem cartItem = itemRepo.findByIsbn13(isbn);
-			itemRepo.delete(cartItem);
+			itemRepo.deleteByIsbn13(isbn);
 			return ResponseEntity.ok().build();
 			
 		} catch (Exception e) {

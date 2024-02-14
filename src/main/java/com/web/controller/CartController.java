@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,9 +39,16 @@ public class CartController {
 	}
 	
 	//장바구니 삭제
+	@Transactional
 	@DeleteMapping("/delete/{isbn}")
 	public void deleteBook(@PathVariable String isbn) {
 		cartService.deleteCartitem(isbn);
+	}
+	
+	//주문 페이지 이동
+	@GetMapping("/order")
+	public void orderPage() {
+//		cartService.goToOrder();
 	}
 
 }
