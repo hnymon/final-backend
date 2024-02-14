@@ -9,7 +9,7 @@ import com.web.domain.CommentEntity;
 
 public interface CommentService {
 	
-	public CommentEntity CommentArea(CommentEntity commentEntity);
+	public String CommentArea(CommentEntity commentEntity);
 	// 댓글 뽑아내기
 	public List<CommentEntity> commnetList();
 	
