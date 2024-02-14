@@ -27,7 +27,7 @@ public class MemberController {
 	private MemberService memberService;
 	
 	@Autowired
-	private TokenService tockenService;
+	private TokenService tokenService;
 	
 	
 	// 토큰을 사용하여 회원정보 불러오기 위해 선언
@@ -100,9 +100,9 @@ public class MemberController {
 	@PostMapping("/getMemberInfo")
 	public Map<String, Object> getMemberInfo(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
 		Map<String, Object> map = new HashMap<>();
-		boolean validTocken = tockenService.existMember(token);
+		boolean validTocken = tokenService.existMember(token);
 		if(validTocken) {
-			Member currentMember = tockenService.getMemberByMemberNum(token);
+			Member currentMember = tokenService.getMemberByMemberNum(token);
 			System.out.println(currentMember);
 			map.put("result", "Success");
 			map.put("currentMember", currentMember);
@@ -120,5 +120,28 @@ public class MemberController {
 		// 멤버넘버로 찾자
 		String res = memberService.editMemberInfo(joinDTO);
 		return res;
+	}
+	
+	// Id 찾기
+	@PostMapping("/findId")
+	public Map<String, Object> findId(@RequestBody JoinDTO joinDTO) {
+		System.out.println(joinDTO);
+		Map<String, Object> resultMap = memberService.findId(joinDTO);
+		return resultMap;
+	}
+	
+	// Pwd 찾기 모달 띄우기 
+	@PostMapping("/findPwd")
+	public Map<String, Object> findPwd(@RequestBody JoinDTO joinDTO) {
+		System.out.println(joinDTO);
+		Map<String, Object> resultMap = memberService.findPwd(joinDTO);
+		return resultMap;
+	}
+	// Pwd 재설정 
+	@PostMapping("/editPassword")
+	public String editPassword(@RequestBody JoinDTO joinDTO) {
+		System.out.println(joinDTO);
+		String result = memberService.editPwd(joinDTO);
+		return result;
 	}
 }
