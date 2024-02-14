@@ -24,6 +24,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
+    public final ListPath<MemberDeliveryAddress, QMemberDeliveryAddress> addr = this.<MemberDeliveryAddress, QMemberDeliveryAddress>createList("addr", MemberDeliveryAddress.class, QMemberDeliveryAddress.class, PathInits.DIRECT2);
+
     public final QCart cart;
 
     //inherited
