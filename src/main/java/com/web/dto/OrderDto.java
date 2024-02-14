@@ -8,7 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class OrderDto {
-	private List<CartItemDto> cartItems;
-	private Long totalCount;
-	private Long deliveryFee;
+	private List<String> isbn;
+	private List<Long> bookCount;
+//	private List<Long> bookPrice;
+	private Long totalPrice;
+	
+	private DeliveryInfo deliveryInfo;
+//	private Long deliveryFee;
 }
