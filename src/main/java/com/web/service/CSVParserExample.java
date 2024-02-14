@@ -63,6 +63,7 @@ public class CSVParserExample {
 	    try (CSVReader reader = new CSVReader( 
 	            new InputStreamReader(new FileInputStream(csvFilePath), StandardCharsets.UTF_8))) {
 	        List<String[]> libraryList = reader.readAll(); // CSV 파일을 읽어와서 리스트에 저장
+	        List<SeoulPublicLibrary> list = new ArrayList<>();
 	        for (String[] line : libraryList) { 
 	            SeoulPublicLibrary seoulPublicLibrary = 
 	            		SeoulPublicLibrary.builder()
@@ -95,10 +96,10 @@ public class CSVParserExample {
 	            			.insttCode(line[26])
 	            			.build();
 	            System.out.println(seoulPublicLibrary);
-	            libraryRepository.save(seoulPublicLibrary);
+	            list.add(seoulPublicLibrary);
 	        } 
 	        // bookDTOList를 이용하여 데이터베이스에 저장
-  
+	        libraryRepository.saveAll(list);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
