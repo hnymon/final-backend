@@ -4,11 +4,16 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -29,8 +34,15 @@ public class CommentEntity {
 	private String commentContent;  // 댓글 내용
 	@Column(name = "COMMENT_DATE" ,insertable = false, updatable = false, columnDefinition = "date default sysdate")
 	private Date commentDate;  		// 댓글날짜
-	@Column(name = "user_name") //FK
-	private String username; 		//댓글작성회원번호
 	@Column(name = "ISBN") // 책정보
 	private String isbn;
+	@Column(name = "STAR_RATING") // 별점
+	private int starRating;
+	@Column(name = "MEMBER_NAME")
+	private String memberName;
+	@ManyToOne(fetch = FetchType.LAZY) 
+	@JoinColumn(name = "MEMBER_NUM") //FK
+	@JsonIgnore
+	private Member member; 		//댓글작성회원번호
+
 }

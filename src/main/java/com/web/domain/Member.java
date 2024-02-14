@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
@@ -30,7 +31,7 @@ import lombok.ToString;
 
 @Setter
 @Getter
-@ToString
+@ToString(exclude = {"comment", "addr", "lnquery"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -87,4 +88,11 @@ public class Member extends BaseEntity{
 	
 	@OneToMany(mappedBy = "member", cascade=CascadeType.ALL)
 	private List<MemberDeliveryAddress> addr = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "member", cascade=CascadeType.ALL)
+	private List<CommentEntity> comment = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "member", cascade=CascadeType.ALL)
+	private List<OneToOneInquiryEntity> lnquery = new ArrayList<>();
+	
 }
