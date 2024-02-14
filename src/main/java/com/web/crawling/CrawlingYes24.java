@@ -31,15 +31,16 @@ public class CrawlingYes24 {
 	@Scheduled(cron = "0 0 */1 * * *") // 1시간
 //	@PostConstruct
 	public void testCrawling() {
-		List<BookCrawling> todayBookKyoboList = bookCrawlingRepository.findAllByType("todayBookKyobo");
-		bookCrawlingRepository.deleteAllInBatch(todayBookKyoboList);
-		List<BookCrawling> nowThisBookKyoboList = bookCrawlingRepository.findAllByType("nowThisBookKyobo");
-		bookCrawlingRepository.deleteAllInBatch(nowThisBookKyoboList);
-		List<BookCrawling> popularBookKyoboList = bookCrawlingRepository.findAllByType("popularBookKyobo");
-		bookCrawlingRepository.deleteAllInBatch(popularBookKyoboList);
+		List<BookCrawling> todayBookYes24List = bookCrawlingRepository.findAllByType("todayBookYes24");
+		bookCrawlingRepository.deleteAllInBatch(todayBookYes24List);
+		List<BookCrawling> nowThisBookYes24List = bookCrawlingRepository.findAllByType("nowThisBookYes24");
+		bookCrawlingRepository.deleteAllInBatch(nowThisBookYes24List);
+		List<BookCrawling> popularBookYes24List = bookCrawlingRepository.findAllByType("popularBookYes24");
+		bookCrawlingRepository.deleteAllInBatch(popularBookYes24List);
 	    final String yes24URL = "https://www.yes24.com/main/default.aspx";
-	    Connection conn = Jsoup.connect(yes24URL); 
+	    Connection conn = Jsoup.connect(yes24URL);
 	    try {
+	    	List<BookCrawling> yesList = new ArrayList<>();
 	    	int cnt = 0;
 	        Document document = conn.get();
 	        // 오늘의 책
@@ -58,9 +59,9 @@ public class CrawlingYes24 {
 	        	dto.setImgUrl(bookImg);
 	        	dto.setIsbn10(isbn10); 
 	        	dto.setIsbn13(isbn13); 
-	        	dto.setType("todayBookKyobo");
+	        	dto.setType("todayBookYes24");
 	        	dto.setUniqueCol(dto.getType()+cnt);
-	        	bookCrawlingRepository.save(dto);
+	        	yesList.add(dto);
 	        }
 	        // 지금 이 책
 	        Elements nowThisBook = document.select(".nowBookSet li");
@@ -78,9 +79,9 @@ public class CrawlingYes24 {
 	        	dto.setImgUrl(bookImg);
         		dto.setIsbn10(isbn10); 
         		dto.setIsbn13(isbn13); 
-	        	dto.setType("nowThisBookKyobo");
+	        	dto.setType("nowThisBookYes24");
 	        	dto.setUniqueCol(dto.getType()+cnt);
-	        	bookCrawlingRepository.save(dto);
+	        	yesList.add(dto);
 	        }
 	        // 크레마샵 화제의 책
 	        Elements popularBooks = document.select(".bookClubSet li");
@@ -98,10 +99,11 @@ public class CrawlingYes24 {
 	        	dto.setImgUrl(bookImg);
 	        	dto.setIsbn10(isbn10);
 	        	dto.setIsbn13(isbn13); 
-	        	dto.setType("popularBookKyobo");
+	        	dto.setType("popularBookYes24");
 	        	dto.setUniqueCol(dto.getType()+cnt);
-	        	bookCrawlingRepository.save(dto);
+	        	yesList.add(dto);
 	        }
+	        bookCrawlingRepository.saveAll(yesList);
 	    } catch (IOException e) {
 	        e.printStackTrace(); 
 	    }

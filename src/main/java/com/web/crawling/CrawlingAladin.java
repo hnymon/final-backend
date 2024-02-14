@@ -40,7 +40,7 @@ public class CrawlingAladin {
 	        int cnt = 0;
 	        // 신간도서
 	        Elements newBook = document.select(".bestseller_book");
-	        System.out.println(newBook);
+	        List<BookCrawling> newList = new ArrayList<>();
 	        for(Element element : newBook) {
 	        	cnt ++;
 	        	String bookName = element.select("h4").text();
@@ -60,11 +60,11 @@ public class CrawlingAladin {
 	        	dto.setIsbn13(isbn13); 
 	        	dto.setType("newBookAladin");
 	        	dto.setUniqueCol(dto.getType()+cnt);
-	        	bookCrawlingRepository.save(dto);
+	        	newList.add(dto);
 	        }
+	        
 	        Element firstUl = document.selectFirst(".book_col_box_list");
 	        Elements newBook2 = firstUl.select("li");
-	        System.out.println("//////////////////////////////////////////////////////////////////\n"+newBook2); 
 	        for(Element element : newBook2) {
 	        	if(element.select(".category_head").text().equals("잡지")) {
 	        		continue;
@@ -87,8 +87,9 @@ public class CrawlingAladin {
 	        	dto.setIsbn13(isbn13);
 	        	dto.setType("newBookAladin");
 	        	dto.setUniqueCol(dto.getType()+cnt);
-	        	bookCrawlingRepository.save(dto);
+	        	newList.add(dto);
 	        }
+	        bookCrawlingRepository.saveAll(newList);
 	    } catch (IOException e) {
 	        e.printStackTrace(); 
 	    }
