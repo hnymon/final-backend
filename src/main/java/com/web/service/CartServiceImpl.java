@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.web.domain.Cart;
 import com.web.domain.CartItem;
@@ -107,6 +108,19 @@ public class CartServiceImpl implements CartService {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 실패");
 		}
+	}
+
+
+	@Override
+	@Transactional
+	public int countItem(String token) {
+		if(tService.existMember(token)) {
+			Member member = tService.getMemberByMemberNum(token);
+			int result = member.getCart().getCartItems().size();
+			System.out.println("장바구니 개수" + result);
+			return result;
+		}
+		return 0;
 	}
 
 }

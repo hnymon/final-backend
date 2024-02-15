@@ -16,6 +16,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,7 +38,7 @@ public class Cart extends BaseEntity{
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CART_SEQ_GENERATOR" )
 	private Long Id;
 	
-	@OneToOne
+	@OneToOne @JsonIgnore
     @JoinColumn(name = "member_num")
     private Member member;
 	

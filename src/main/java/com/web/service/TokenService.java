@@ -27,19 +27,26 @@ public class TokenService {
 		}
 	}
 
-	public Member getMember(String token) {
-		String jwtToken = token.substring(7);
-
-		String email = jwtUtil.getEmail(jwtToken);
-		Member member = mRepo.findByEmail(email);
-
-		return member;
-	}
+//	public Member getMember(String token) {
+//		String jwtToken = token.substring(7);
+//
+//		String email = jwtUtil.getEmail(jwtToken);
+//		Member member = mRepo.findByEmail(email);
+//
+//		return member;
+//	}
+	
 	public Member getMemberByMemberNum(String token) {
 		String jwtToken = token.substring(7);
 		Long memberNum = jwtUtil.getMemberNum(jwtToken).get();
 		Member member = mRepo.findById(memberNum).get();
 		return member;
+	}
+	
+	public Long getMemberNum(String token) {
+		String jwtToken = token.substring(7);
+		Long memberNum = jwtUtil.getMemberNum(jwtToken).get();
+		return memberNum;
 	}
 
 }

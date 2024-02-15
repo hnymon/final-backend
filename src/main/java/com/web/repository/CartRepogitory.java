@@ -12,4 +12,6 @@ public interface CartRepogitory extends CrudRepository<Cart, Long> {
 
 	Cart findByMember(Member member);
 
+	int countCartItemsByMember(Member member);
+
 }
