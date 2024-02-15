@@ -85,9 +85,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String email = customUserDetails.getEmail();
 		Long memberNum = customUserDetails.getMemberNum();
 		String accessToken = jwtUtil.createAccessToken(memberNum);
+		String refreshToken = jwtUtil.createRefreshToken();
+		jwtUtil.updateRefreshToken(memberNum, refreshToken);
+		
 		
 		response.addHeader(jwtUtil.getAccessHeader(), "Bearer " + accessToken);
-
+		response.addHeader(jwtUtil.getRefreshHeader(), "Bearer " + refreshToken);
 	}
 
 	@Override

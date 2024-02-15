@@ -70,7 +70,8 @@ public class SecurityConfig {
 	                        configuration.setAllowCredentials(true);
 	                        configuration.setAllowedHeaders(Collections.singletonList("*"));
 	                        configuration.setMaxAge(3600L);
-
+	                        
+	                        configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
 							configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
 	                        return configuration;
@@ -95,6 +96,7 @@ public class SecurityConfig {
 		http
 			.authorizeHttpRequests((auth) -> auth
 					.antMatchers("/login", "/", "/join").permitAll()
+					.antMatchers("/board**/**").permitAll()
 					.antMatchers("/admin").hasRole("ADMIN")
 					.anyRequest().permitAll()
 					);
