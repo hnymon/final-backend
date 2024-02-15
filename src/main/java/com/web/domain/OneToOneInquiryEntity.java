@@ -18,9 +18,19 @@ import javax.persistence.TableGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Setter
+@Getter
+@ToString(exclude = { "Inquery" })
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 @Table(name = "ONETOONEINQUIRY")
 @TableGenerator(name = "INQUIRY_SEQ",	// 테이블 이름  
@@ -46,11 +56,14 @@ public class OneToOneInquiryEntity {
 	@Column(name = "INQUIRY_DATE", insertable = false , updatable = false, columnDefinition = "date default sysdate") // 문의 등록 날짜
 	private Date inquiryDate;
 	
+	@Column(name = "INQUIRY_STATUS") // 문의 상태
+    private String inquiryStatus; 
 	@ManyToOne
 	@JoinColumn(name = "MEMBER_NUM") // member 외래키 FK
 	@JsonIgnore
 	private Member member;
 	
-	
+	@OneToMany(mappedBy = "Inquery", cascade=CascadeType.ALL)
+	private List<AdminCommentEntity> Inquery = new ArrayList<>();
 }
  
