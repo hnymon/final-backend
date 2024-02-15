@@ -22,6 +22,7 @@ import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
+import com.web.dto.DeliveryInfo;
 import com.web.dto.OrderDto;
 import com.web.service.OrderService;
 
@@ -83,7 +84,11 @@ public class OrderController {
         log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
         return payment;
     }
-	
+    
+    @GetMapping("/order/loadDefaultDelivery")
+    public DeliveryInfo loadDefaultDelivery(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+    	return orderService.loadDefaultDelivery(token);
+    }
 
 
 }

@@ -12,7 +12,7 @@ public class CartItemDto {
 	private Long count;
 	
 	public CartItemDto(CartItem cartItem) {
-		isbn13 = cartItem.getIsbn13();
-		count = cartItem.getCount();
+		this.isbn13 = cartItem.getIsbn13();
+		this.count = cartItem.getCount();
 	}
 }

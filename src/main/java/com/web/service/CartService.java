@@ -12,5 +12,6 @@ public interface CartService {
 	public List<CartItemDto> cartList(String token);
 	public void addCart(CartItemDto cartdto, String token);
 	public ResponseEntity<String> deleteCartitem(String isbn);
+	public int countItem(String token);
 	
 }
