@@ -13,4 +13,8 @@ public interface OneToOneLnqueryRepository extends JpaRepository<OneToOneInquiry
 //	Page<OneToOneInquiryEntity> findByMemberMemberNum(Pageable pageable, Long memberNum);
 //	List<OneToOneInquiryEntity> findAllByMemberMemberNum(Long memberNum);
 	Page<OneToOneInquiryEntity> findAllByMemberMemberNum(Pageable pageable,Long memberNum);
+	
+	OneToOneInquiryEntity findByInquiryStatus(Long InquiryId);
+	
+	Page<OneToOneInquiryEntity> findAllByMemberMemberNumAndInquiryStatus(Pageable pageable,Long memberNum, String InquiryStatus);
 }

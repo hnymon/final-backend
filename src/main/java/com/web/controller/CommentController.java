@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,8 +69,6 @@ public class CommentController {
 //	페이징처리
 	@GetMapping("/CommentList")
 	public Page<CommentEntity> CommentList(@PageableDefault(size = 10, page = 0) Pageable pageable, @RequestParam String isbn) {
-		System.out.println("lhhhhhh");
-		System.out.println(isbn);
 		Page<CommentEntity> paging = commentService.getComments(pageable ,isbn);
 		System.out.println(paging);
 		
@@ -80,6 +79,13 @@ public class CommentController {
 	@DeleteMapping("/CommentDelete/{commentId}")
 	public String CommentDelete(@PathVariable Long commentId) {
 		commentService.CommentDelete(commentId);
+		return "success";
+	}
+	@PostMapping("CommentUpdate/{commentId}")
+	public String CommentUpdate(@PathVariable Long commentId, @RequestBody CommentEntity commentEntity) {
+		commentEntity.setCommentId(commentId);
+		System.out.println(commentEntity);
+		commentService.CommentUpdate(commentEntity);
 		return "success";
 	}
 	

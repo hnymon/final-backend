@@ -16,5 +16,8 @@ public interface CommentService {
 	Page<CommentEntity> getComments(Pageable pageable, String isbn);
 	
 	public void CommentDelete(Long commentId);
+	
+	// 수정 
+	public CommentEntity CommentUpdate(CommentEntity commentEntity);
 }
  
