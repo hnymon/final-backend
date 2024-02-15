@@ -52,5 +52,13 @@ public class CommentServiceImpl implements CommentService {
 		// TODO Auto-generated method stub
 		commentRepository.deleteById(commentId);
 	}
+	// 수정
+	@Override
+	public CommentEntity CommentUpdate(CommentEntity commentEntity) {
+		// TODO Auto-generated method stub
+		
+		return commentRepository.save(commentEntity);
+	}
+	
 
 }

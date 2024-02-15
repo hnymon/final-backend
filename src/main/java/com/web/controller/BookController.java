@@ -148,7 +148,7 @@ public class BookController {
 			map.put("starAvg", avg);
 		} catch (Exception e) {
 			// TODO Auto-generated catch blockd
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
     	return map;
     }

@@ -33,7 +33,7 @@ import lombok.ToString;
 
 @Setter
 @Getter
-@ToString(exclude = {"comment", "addr", "lnquery"})
+@ToString(exclude = {"comment", "addr", "Inquery"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -95,6 +95,6 @@ public class Member extends BaseEntity{
 	private List<CommentEntity> comment = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "member", cascade=CascadeType.ALL)
-	private List<OneToOneInquiryEntity> lnquery = new ArrayList<>();
+	private List<OneToOneInquiryEntity> Inquery = new ArrayList<>();
 	
 }
