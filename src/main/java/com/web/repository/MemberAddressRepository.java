@@ -8,4 +8,6 @@ import com.web.domain.MemberDeliveryAddress;
 
 public interface MemberAddressRepository extends JpaRepository<MemberDeliveryAddress, Long>{
 	List<MemberDeliveryAddress> findAllByMemberMemberNum(Long memberNum);
+	
+	MemberDeliveryAddress findByIsDefaultAndMemberMemberNum(boolean isDefault, Long memberNum);
 }

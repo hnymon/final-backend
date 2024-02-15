@@ -46,9 +46,14 @@ public class CartController {
 	}
 	
 	//주문 페이지 이동
-	@GetMapping("/order")
-	public void orderPage() {
-//		cartService.goToOrder();
+//	@GetMapping("/order")
+//	public void orderPage() {
+////		cartService.goToOrder();
+//	}
+	
+	@GetMapping("/count")
+	public int CartItemCount(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
+		return cartService.countItem(token);
 	}
 
 }
