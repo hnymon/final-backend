@@ -54,11 +54,17 @@ public class CrawlingYes24 {
 	        	Document documentInfo = connInfo.get();
 	        	String isbn10 = documentInfo.select(".infoSetCont_wrap table.tb_nor.tb_vertical tbody.b_size tr:has(th:containsOwn(ISBN10))").select("td").text();
 	        	String isbn13 = documentInfo.select(".infoSetCont_wrap table.tb_nor.tb_vertical tbody.b_size tr:has(th:containsOwn(ISBN13))").select("td").text();
+	        	String author = element.select(".tb_pub").text().split("\\|")[0];
+	        	String publisher = element.select(".tb_pub").text().split("\\| ")[1];
+	        	String content = element.select(".tb_readCon").text();
 	        	BookCrawling dto = new BookCrawling();
 	        	dto.setBookName(bookName);
 	        	dto.setImgUrl(bookImg);
 	        	dto.setIsbn10(isbn10); 
 	        	dto.setIsbn13(isbn13); 
+	        	dto.setAuthor(author); 
+	        	dto.setPublisher(publisher);
+	        	dto.setContent(content);
 	        	dto.setType("todayBookYes24");
 	        	dto.setUniqueCol(dto.getType()+cnt);
 	        	yesList.add(dto);
@@ -74,11 +80,15 @@ public class CrawlingYes24 {
 	        	Document documentInfo = connInfo.get();
 	        	String isbn10 = documentInfo.select(".infoSetCont_wrap table.tb_nor.tb_vertical tbody.b_size tr:has(th:containsOwn(ISBN10))").select("td").text();
 	        	String isbn13 = documentInfo.select(".infoSetCont_wrap table.tb_nor.tb_vertical tbody.b_size tr:has(th:containsOwn(ISBN13))").select("td").text();
+	        	String author = element.select(".goods_auth").text();
+	        	String publisher = element.select(".goods_pub").text();
 	        	BookCrawling dto = new BookCrawling();
 	        	dto.setBookName(bookName);
 	        	dto.setImgUrl(bookImg);
         		dto.setIsbn10(isbn10); 
         		dto.setIsbn13(isbn13); 
+        		dto.setAuthor(author); 
+	        	dto.setPublisher(publisher);
 	        	dto.setType("nowThisBookYes24");
 	        	dto.setUniqueCol(dto.getType()+cnt);
 	        	yesList.add(dto);
@@ -86,6 +96,7 @@ public class CrawlingYes24 {
 	        // 크레마샵 화제의 책
 	        Elements popularBooks = document.select(".bookClubSet li");
 	        for(Element element : popularBooks) {
+	        	System.out.println(element);
 	        	cnt ++;
 	        	String bookName = element.select(".goods_name").text();
 	        	String bookImg = element.select("img").attr("data-original");
@@ -94,11 +105,15 @@ public class CrawlingYes24 {
 	        	Document documentInfo = connInfo.get();
 	        	String isbn10 = documentInfo.select(".infoSetCont_wrap table.tb_nor.tb_vertical tbody.b_size tr:has(th:containsOwn(ISBN10))").select("td").text();
 	        	String isbn13 = documentInfo.select(".infoSetCont_wrap table.tb_nor.tb_vertical tbody.b_size tr:has(th:containsOwn(ISBN13))").select("td").text();
+	        	String author = element.select(".goods_auth").text();
+	        	String publisher = element.select(".goods_pub").text();
 	        	BookCrawling dto = new BookCrawling();
 	        	dto.setBookName(bookName);
 	        	dto.setImgUrl(bookImg);
 	        	dto.setIsbn10(isbn10);
 	        	dto.setIsbn13(isbn13); 
+	        	dto.setAuthor(author); 
+	        	dto.setPublisher(publisher);
 	        	dto.setType("popularBookYes24");
 	        	dto.setUniqueCol(dto.getType()+cnt);
 	        	yesList.add(dto);
