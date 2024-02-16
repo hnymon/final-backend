@@ -278,6 +278,7 @@ public class MemberServiceImpl implements MemberService{
 			return "Equal Password";
 		}
 		if(!joinDTO.getPassword().equals("")) { 
+			System.out.println("설마?????");
 			member.setPassword(bCryptPasswordEncoder.encode(joinDTO.getPassword()));
 		}
 		memberRepository.save(member);

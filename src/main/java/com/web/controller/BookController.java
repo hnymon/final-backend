@@ -2,18 +2,23 @@ package com.web.controller;
 
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,7 +29,6 @@ import com.web.dto.BookDTO;
 import com.web.dto.SendDataDTO;
 import com.web.repository.CommentRepository;
 import com.web.service.CommentService;
-
 @RestController
 public class BookController {
 	
@@ -63,6 +67,7 @@ public class BookController {
 	
 	@PostMapping("/testBook3")
 	   public ResponseEntity<Map<String, Object>> testBook3(@RequestBody SendDataDTO dto) {
+		System.out.println(dto);
 	       try {
 	           int display = 10;
 	           URI uri = UriComponentsBuilder
@@ -75,6 +80,7 @@ public class BookController {
 	                   .encode(Charset.forName("UTF-8"))
 	                   .build()
 	                   .toUri();
+	           System.out.println(uri);
 	           RestTemplate restTemplate = new RestTemplate();
 	           // 헤더 추가 위해
 	           RequestEntity<Void> req = RequestEntity
@@ -89,7 +95,6 @@ public class BookController {
 	           Map<String, Object> resultMap = objectMapper.readValue(result.getBody(), new TypeReference<Map<String, Object>>(){});
 	           List<BookDTO> books = objectMapper.convertValue(resultMap.get("items"), new TypeReference<List<BookDTO>>(){});
 	           for(BookDTO book : books) {
-	              System.out.println("//////////////////////////////////////////////////////////////////////////////////////////");
 	              float avg=0;
 	              try {
 	                   float tot = commentRepository.sumOfColumn(book.getIsbn());
@@ -101,7 +106,6 @@ public class BookController {
 	               } catch (Exception e) {
 	                   // 예외 발생 시 처리
 	               }
-	              System.out.println(avg);
 	              book.setStarAvg(avg);
 	           }
 	           int total = objectMapper.readValue(objectMapper.writeValueAsString(resultMap.get("total")), int.class);
@@ -120,7 +124,7 @@ public class BookController {
     // 네이버 책검색 api Detail
     @PostMapping("/testBook4")
     public Map<String, Object> testBook4(@RequestBody SendDataDTO dto) {
-    	int display = 10;
+    	System.out.println(dto);
     	URI uri = UriComponentsBuilder
     			.fromUriString("https://openapi.naver.com")
     			.path("/v1/search/book_adv.json")
@@ -148,9 +152,36 @@ public class BookController {
 			map.put("starAvg", avg);
 		} catch (Exception e) {
 			// TODO Auto-generated catch blockd
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
     	return map;
+    }
+    // 네이버 책검색 api Detail
+    @PostMapping("/naver_book_adv_Api")
+    @Cacheable(value = "bookDetails", key = "#dto.isbn")
+    public Map<String, Object> naver_book_adv_Api(@RequestBody SendDataDTO dto) {
+        try {
+            URI uri = URI.create("https://openapi.naver.com/v1/search/book_adv.json?d_isbn=" + dto.getIsbn());
+
+            WebClient webClient = WebClient.create();
+
+            String result = webClient.get()
+                .uri(uri)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header("X-Naver-Client-Id", CLIENT_ID)
+                .header("X-Naver-Client-Secret", CLIENT_SECRET)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("detail", result);
+            return map;
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 예외 발생 시 적절한 응답을 반환하거나 로깅하도록 처리
+            return Collections.singletonMap("error", "Failed to retrieve book details");
+        }
     }
 	
 //	private final String key = "05377ae946110607a0d89dae94e81960";
