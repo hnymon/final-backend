@@ -1,6 +1,7 @@
 package com.web.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.web.domain.CheckMemberEmail;
 import com.web.domain.Member;
+import com.web.domain.MemberDeliveryAddress;
 import com.web.domain.Role;
 import com.web.dto.JoinDTO;
 import com.web.jwt.JWTUtil;
+import com.web.service.MemberAddressService;
 import com.web.service.MemberService;
 import com.web.service.TokenService;
 
@@ -26,7 +29,8 @@ public class MemberController {
 	// 회원정보 서비스
 	@Autowired
 	private MemberService memberService;
-	
+	@Autowired
+	private MemberAddressService addressService;
 	@Autowired
 	private TokenService tokenService;
 	
@@ -102,7 +106,9 @@ public class MemberController {
 	@PostMapping("/getMemberInfo")
 	public Map<String, Object> getMemberInfo(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
 		Map<String, Object> map = new HashMap<>();
+		System.out.println(token);
 		boolean validTocken = tokenService.existMember(token);
+		System.out.println(validTocken);
 		if(validTocken) {
 			Member currentMember = tokenService.getMemberByMemberNum(token);
 			System.out.println(currentMember);
@@ -113,6 +119,50 @@ public class MemberController {
 			map.put("result", "Failure");
 			System.out.println("실패");
 		}
+		return map;
+	}
+//	// 토큰으로 정보 불러오기 수정본
+//	@Transactional
+//	@PostMapping("/getMemberAdrInfo")
+//	public Map<String, Object> getMemberAdrInfo(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+//		Map<String, Object> map = new HashMap<>();
+//		boolean validTocken = tokenService.existMember(token);
+//		System.out.println(validTocken);
+//		if(validTocken) {
+//			Member currentMember = tokenService.getMemberByMemberNum(token);
+//			System.out.println(currentMember);
+//			map.put("result", "Success");
+//			JoinDTO dto = new JoinDTO();
+//			dto.setMemberNum(currentMember.getMemberNum());
+//			dto.setMemberName(currentMember.getMemberName());
+//			dto.setEmail(currentMember.getEmail());
+//			dto.setPhoneNum(currentMember.getPhoneNum());
+//			dto.setSocialType(currentMember.getSocialType());
+//			dto.setRole(currentMember.getRole());
+//			dto.setUsername(currentMember.getUsername());
+//			map.put("currentMember", dto);
+//		} else {
+//			map.put("result", "Failure");
+//		}
+//	
+//		return map;
+//	}
+	
+	@Transactional
+	@PostMapping("/getMemberAdr")
+	public Map<String, Object> getMemberAdr(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+		Map<String, Object> map = new HashMap<>();
+		boolean validTocken = tokenService.existMember(token);
+		System.out.println(validTocken);
+		if(validTocken) {
+			Member currentMember = tokenService.getMemberByMemberNum(token);
+			map.put("result", "Success");
+			List<MemberDeliveryAddress> mda = addressService.findByMemberMemberNum(currentMember.getMemberNum());
+			map.put("addrs", mda);
+		} else {
+			map.put("result", "Failure");
+		}
+		
 		return map;
 	}
 	

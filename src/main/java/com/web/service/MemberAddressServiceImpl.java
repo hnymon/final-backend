@@ -104,6 +104,15 @@ public class MemberAddressServiceImpl implements MemberAddressService{
 		}
 		return "Failure";
 	}
+
+
+
+	@Override
+	public List<MemberDeliveryAddress> findByMemberMemberNum(Long memberNum) {
+		// TODO Auto-generated method stub
+		List<MemberDeliveryAddress> addrs = memberAddressRepository.findAllByMemberMemberNum(memberNum);
+		return addrs;
+	}
 	
 	
 }
