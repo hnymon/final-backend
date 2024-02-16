@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.web.domain.CommentEntity;
+import com.web.dto.CommentDTO;
 import com.web.repository.CommentRepository;
 
 @Service
@@ -46,6 +47,22 @@ public class CommentServiceImpl implements CommentService {
 //		System.out.println(commentRepository.findAllByIsbn(pageable,isbn)); // fintBy뒤에는 대문자
 		return commentRepository.findByIsbn(pageable, isbn);
 	}
+//	@Override
+//	public Page<CommentDTO> getComments(Pageable pageable, String isbn) {
+////		System.out.println(commentRepository.findAllByIsbn(pageable,isbn)); // fintBy뒤에는 대문자
+//		Page<CommentEntity> paging =commentRepository.findByIsbn(pageable,isbn);
+//		return paging.map(entity -> {
+//			CommentDTO dto = new CommentDTO();
+//			dto.setCommentId(entity.getCommentId());
+//			dto.setCommentContent(entity.getCommentContent());
+//			dto.setCommentDate(entity.getCommentDate());
+//			dto.setIsbn(entity.getIsbn());
+//			dto.setMemberName(entity.getMemberName());
+//			dto.setStarRating(entity.getStarRating());
+//			dto.setMember(entity.getMember());
+//			return dto;
+//		});
+//	}
 
 	@Override
 	public void CommentDelete(Long commentId) {
@@ -54,10 +71,13 @@ public class CommentServiceImpl implements CommentService {
 	}
 	// 수정
 	@Override
-	public CommentEntity CommentUpdate(CommentEntity commentEntity) {
+	public void CommentUpdate(Long commentId,String editedCommentContent) {
 		// TODO Auto-generated method stub
-		
-		return commentRepository.save(commentEntity);
+		Optional<CommentEntity> optional = commentRepository.findById(commentId);
+		optional.ifPresent(comment -> {
+            comment.setCommentContent(editedCommentContent);
+            commentRepository.save(comment);
+        });
 	}
 	
 

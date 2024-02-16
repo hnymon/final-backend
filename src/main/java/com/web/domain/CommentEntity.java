@@ -44,5 +44,8 @@ public class CommentEntity {
 	@JoinColumn(name = "MEMBER_NUM") //FK
 	@JsonIgnore
 	private Member member; 		//댓글작성회원번호
-
+	
+	public void UpdateContent(String editedContent){
+		this.commentContent = editedContent;
+	}
 }
