@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class DeliveryInfo {
+	private String addrName; //배송처 이름
 	private String name; // 수령인
 	private String phone; // 수령인 연락처
 	private String zipcode; // 우편번호
@@ -16,6 +17,7 @@ public class DeliveryInfo {
 	private String addrDetail; // 상세주소
 	
 	public DeliveryInfo(MemberDeliveryAddress deliveryAddr) {
+		this.addrName = deliveryAddr.getDaName();
 		this.name = deliveryAddr.getRecipientName();
 		this.phone = deliveryAddr.getRecipientTel();
 		this.zipcode = deliveryAddr.getZipcode();

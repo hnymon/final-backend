@@ -2,6 +2,8 @@ package com.web.oauth2.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.SameSite;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,7 @@ import com.web.oauth2.CustomOAuth2User;
 import com.web.repository.MemberRepository;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -35,7 +38,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         try {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
-            // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
+            // User의 Role이 GUEST일 경우 DB저장
             if(oAuth2User.getRole() == Role.GUEST) {
                 String accessToken = jwtUtil.createAccessToken(oAuth2User.getMemberNum());
                 String refreshToken = jwtUtil.createRefreshToken();
@@ -47,6 +50,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 findMember.authorizeUser();
                 findMember.updateRefreshToken(refreshToken);
                 mRepo.save(findMember);
+                
                 
                 response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000/login/callback")
                 		.queryParam("accessToken", accessToken)
@@ -60,6 +64,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             	String refreshToken = jwtUtil.createRefreshToken();
             	Member findMember = mRepo.findByEmail(oAuth2User.getEmail());
             	findMember.updateRefreshToken(refreshToken);
+                
+                
             	response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000/login/callback")
                 		.queryParam("accessToken", accessToken)
                 		.queryParam("refreshToken", refreshToken)
@@ -71,26 +77,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         } catch (Exception e) {
             throw e;
         }
-        
-
-        
-
     }
 
-    // TODO : 소셜 로그인 시에도 무조건 토큰 생성하지 말고 JWT 인증 필터처럼 RefreshToken 유/무에 따라 다르게 처리해보기
-//    private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
-//        String accessToken = jwtUtil.createAccessToken(oAuth2User.getEmail());
-//        String refreshToken = jwtUtil.createRefreshToken();
-//        System.out.println("헤더 이름 "+jwtUtil.getAccessHeader() + " 토큰 정보 "+accessToken);
-//        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-//        response.setHeader("Access-Control-Allow-Credentials", "true");
-//        response.addHeader(jwtUtil.getAccessHeader(), "Bearer " + accessToken);
-//        response.addHeader(jwtUtil.getRefreshHeader(), "Bearer " + refreshToken);
-//        System.out.println();
-//        
-//        System.out.println(response.getHeader("Authorization"));
-//
-//        jwtUtil.sendAccessAndRefreshToken(response, accessToken, refreshToken);
-//        jwtUtil.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
-//    }
 }

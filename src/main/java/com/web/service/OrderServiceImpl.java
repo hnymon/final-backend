@@ -2,6 +2,7 @@ package com.web.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -14,6 +15,7 @@ import com.web.domain.MemberDeliveryAddress;
 import com.web.domain.Order;
 import com.web.domain.OrderDetail;
 import com.web.dto.DeliveryInfo;
+import com.web.dto.MyOrderDTO;
 import com.web.dto.OrderAdminDTO;
 import com.web.dto.OrderDto;
 import com.web.repository.CartItemRepogitory;
@@ -102,6 +104,33 @@ public class OrderServiceImpl implements OrderService{
 		return null;
 		
 	}
+	
+	@Override
+	public List<DeliveryInfo> loadDeliveryList(String token) {
+		Long memberNum = tService.getMemberNum(token);
+		System.out.println("memberNum"+memberNum);
+		List<MemberDeliveryAddress> deliveryList = addrRepo.findAllByMemberMemberNum(memberNum);
+		System.out.println("배송리스트"+deliveryList);
+		
+		List<DeliveryInfo> deliveryInfoList = deliveryList.stream()
+				.map(d -> new DeliveryInfo(d))
+				.collect(Collectors.toList());
+		
+		return deliveryInfoList;
+	}
+	
+	@Override
+	public List<MyOrderDTO> loadMyOrder(String token) {
+		Long memberNum = tService.getMemberNum(token);
+		List<Order> orderList = oRepo.findByMemberMemberNum(memberNum);
+		List<MyOrderDTO> orderDtoList = orderList.stream()
+				.map(o -> new MyOrderDTO(o))
+				.collect(Collectors.toList());
+		
+		return orderDtoList;
+	}
+	
+	
 	@Override
 	public List<OrderAdminDTO> getOrderList() {
 		// TODO Auto-generated method stub
