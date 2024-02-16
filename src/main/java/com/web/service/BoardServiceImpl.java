@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.web.domain.BoardEntity;
@@ -20,9 +22,10 @@ public class BoardServiceImpl implements BoardService{
 	}
 	//게시판 전체 리스트 출력
 	@Override
-	public List<BoardEntity> BoardList() {
+	public Page<BoardEntity> BoardList(Pageable pageable) {
 		// TODO Auto-generated method stub
-		return boardRepository.findAll();
+		Page<BoardEntity> paging = boardRepository.findAll(pageable); 
+		return paging;
 	}
 	@Override
 	public BoardEntity BoardDetail(Long boardSeq) {
