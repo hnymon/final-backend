@@ -25,6 +25,7 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import com.web.dto.DeliveryInfo;
+import com.web.dto.MyOrderDTO;
 import com.web.dto.OrderAdminDTO;
 import com.web.dto.OrderDto;
 import com.web.service.OrderService;
@@ -91,6 +92,16 @@ public class OrderController {
     @GetMapping("/order/loadDefaultDelivery")
     public DeliveryInfo loadDefaultDelivery(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
     	return orderService.loadDefaultDelivery(token);
+    }
+    
+    @GetMapping("/order/loadDeliveryList")
+    public List<DeliveryInfo> loadDeliveryList(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+    	return orderService.loadDeliveryList(token);
+    }
+    
+    @GetMapping("/order/loadMyOrder")
+    public List<MyOrderDTO> loadMyOrder(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+    	return orderService.loadMyOrder(token);
     }
     
     // 추가

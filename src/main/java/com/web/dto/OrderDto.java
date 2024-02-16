@@ -2,6 +2,8 @@ package com.web.dto;
 
 import java.util.List;
 
+import com.web.domain.OrderDetail;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,4 +17,5 @@ public class OrderDto {
 	
 	private DeliveryInfo deliveryInfo;
 //	private Long deliveryFee;
+	
 }
