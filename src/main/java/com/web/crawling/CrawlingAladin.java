@@ -54,10 +54,14 @@ public class CrawlingAladin {
 	        	}else {
 	        		isbn13 = documentInfo.select(".conts_info_list1 li:nth-last-child(2)").text().substring(7);
 	        	} 
+	        	String author = element.select(".author").text().split(" \\| ")[0];
+	        	String publisher = element.select(".author").text().split(" \\| ")[1];
 	        	BookCrawling dto = new BookCrawling();
 	        	dto.setBookName(bookName);
 	        	dto.setImgUrl(bookImg);
 	        	dto.setIsbn13(isbn13); 
+	        	dto.setAuthor(author); 
+	        	dto.setPublisher(publisher); 
 	        	dto.setType("newBookAladin");
 	        	dto.setUniqueCol(dto.getType()+cnt);
 	        	newList.add(dto);
@@ -81,10 +85,14 @@ public class CrawlingAladin {
 	        	}else {
 	        		isbn13 = documentInfo.select(".conts_info_list1 li:nth-last-child(2)").text().substring(7);
 	        	} 
+	        	String author = element.select(".author").text().split(" \\| ")[0];
+	        	String publisher = element.select(".author").text().split(" \\| ")[1];
 	        	BookCrawling dto = new BookCrawling();
 	        	dto.setBookName(bookName);
 	        	dto.setImgUrl(bookImg);
 	        	dto.setIsbn13(isbn13);
+	        	dto.setAuthor(author); 
+	        	dto.setPublisher(publisher); 
 	        	dto.setType("newBookAladin");
 	        	dto.setUniqueCol(dto.getType()+cnt);
 	        	newList.add(dto);
