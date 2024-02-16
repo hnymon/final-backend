@@ -1,6 +1,8 @@
 package com.web.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -23,6 +25,7 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import com.web.dto.DeliveryInfo;
+import com.web.dto.OrderAdminDTO;
 import com.web.dto.OrderDto;
 import com.web.service.OrderService;
 
@@ -89,6 +92,49 @@ public class OrderController {
     public DeliveryInfo loadDefaultDelivery(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
     	return orderService.loadDefaultDelivery(token);
     }
-
-
+    
+    // 추가
+    @PostMapping("/adminOrder/getList")
+    public Map<String, Object> getOrderList() {
+    	Map<String, Object> map = new HashMap<>();
+    	try {
+				List<OrderAdminDTO> list = orderService.getOrderList();
+				map.put("orderList", list);
+				map.put("result", "Success");
+			return map;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	map.put("result", "Failure");
+    	return map;
+    }
+    @PostMapping("/adminOrder/getOrderDetail")
+    public Map<String, Object> getOrderDetail(@RequestBody OrderAdminDTO id) {
+    	System.out.println(id);
+    	System.out.println("////////////////////////////////////////////////");
+    	Map<String, Object> map = new HashMap<>();
+    	try {
+				List<OrderAdminDTO> list = orderService.getOrderDetailList(id.getId());
+				map.put("odt", list);
+				System.out.println(list);
+				map.put("result", "Success");
+			return map;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	map.put("result", "Failure");
+    	return map;
+    	
+    	
+    }
+    
+    @PostMapping("/adminOrder/approval")
+    public String oderDetailApproval(@RequestBody OrderAdminDTO dto) {
+    	System.out.println(dto);
+    	String res = orderService.approval(dto);
+    	return res;
+    	
+    }
 }
