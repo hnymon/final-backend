@@ -15,5 +15,8 @@ public class BookCrawling {
 	private String type;
 	private String bookName;
 	private String imgUrl;
+	private String author;
+	private String publisher;
+	private String content;
 }
 
