@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.web.domain.CommentEntity;
+import com.web.dto.CommentDTO;
 
 public interface CommentService {
 	
@@ -14,10 +15,11 @@ public interface CommentService {
 	public List<CommentEntity> commnetList();
 	
 	Page<CommentEntity> getComments(Pageable pageable, String isbn);
+//	Page<CommentDTO> getComments(Pageable pageable, String isbn);
 	
 	public void CommentDelete(Long commentId);
 	
 	// 수정 
-	public CommentEntity CommentUpdate(CommentEntity commentEntity);
+	public void CommentUpdate(Long commentId,String editedCommentContent);
 }
  
