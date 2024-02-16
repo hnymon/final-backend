@@ -31,7 +31,7 @@ import lombok.ToString;
 @ToString
 @SequenceGenerator(name="ORDER_DETAIL_SEQ_GENERATOR", sequenceName="ORDER_DETAIL_SEQ", allocationSize = 1)
 @Table(name="ORDER_DETAIL")
-public class OrderDetail {
+public class OrderDetail extends BaseEntity {
    
    @Id
    @Column(name="order_datail_id")

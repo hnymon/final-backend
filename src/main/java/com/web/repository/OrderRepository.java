@@ -10,5 +10,6 @@ import com.web.domain.Order;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 	List<Order> findAll();
 	List<Order> findAll(Sort sort);
+	List<Order> findByMemberMemberNum(Long memberNum);
 	
 }
