@@ -14,12 +14,12 @@ public interface CommentService {
 	// 댓글 뽑아내기
 	public List<CommentEntity> commnetList();
 	
-	Page<CommentEntity> getComments(Pageable pageable, String isbn);
-//	Page<CommentDTO> getComments(Pageable pageable, String isbn);
+//	Page<CommentEntity> getComments(Pageable pageable, String isbn);
+	List<CommentDTO> getComments(String isbn);
 	
 	public void CommentDelete(Long commentId);
 	
 	// 수정 
-	public void CommentUpdate(Long commentId,String editedCommentContent);
+	public void CommentUpdate(Long commentId,CommentEntity editedCommentContent);
 }
  

@@ -1,5 +1,6 @@
 package com.web.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +29,10 @@ public class CommentServiceImpl implements CommentService {
 			if (optional.isPresent()) {
 				return "Failure";
 			}
+//			boolean a = commentEntity.getMember().getMemberName() == null;
+			if(commentEntity.getMember().getMemberName() == null) {
+				commentEntity.setMemberName(commentEntity.getMember().getSocialType()+" 회원"+ commentEntity.getMember().getMemberNum() );
+			}
 			commentRepository.save(commentEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -41,28 +46,29 @@ public class CommentServiceImpl implements CommentService {
 		// TODO Auto-generated method stub
 		return commentRepository.findAll();
 	}
-
-	@Override
-	public Page<CommentEntity> getComments(Pageable pageable, String isbn) {
-//		System.out.println(commentRepository.findAllByIsbn(pageable,isbn)); // fintBy뒤에는 대문자
-		return commentRepository.findByIsbn(pageable, isbn);
-	}
+	// 페이징처리 Entity형식
 //	@Override
-//	public Page<CommentDTO> getComments(Pageable pageable, String isbn) {
+//	public Page<CommentEntity> getComments(Pageable pageable, String isbn) {
 ////		System.out.println(commentRepository.findAllByIsbn(pageable,isbn)); // fintBy뒤에는 대문자
-//		Page<CommentEntity> paging =commentRepository.findByIsbn(pageable,isbn);
-//		return paging.map(entity -> {
-//			CommentDTO dto = new CommentDTO();
-//			dto.setCommentId(entity.getCommentId());
-//			dto.setCommentContent(entity.getCommentContent());
-//			dto.setCommentDate(entity.getCommentDate());
-//			dto.setIsbn(entity.getIsbn());
-//			dto.setMemberName(entity.getMemberName());
-//			dto.setStarRating(entity.getStarRating());
-//			dto.setMember(entity.getMember());
-//			return dto;
-//		});
+//		return commentRepository.findByIsbn(pageable, isbn);
 //	}
+	@Override
+	public List<CommentDTO> getComments(String isbn) {
+		List<CommentEntity> list = commentRepository.findByIsbn(isbn);
+		List<CommentDTO> returnList = new ArrayList<>();
+		for(CommentEntity ce : list) {
+			CommentDTO dto = new CommentDTO();
+			dto.setCommentContent(ce.getCommentContent());
+			dto.setCommentDate(ce.getCommentDate());
+			dto.setCommentId(ce.getCommentId());
+			dto.setIsbn(ce.getIsbn());
+			dto.setMemberNum(ce.getMember().getMemberNum());
+			dto.setMemberName(ce.getMemberName());
+			dto.setStarRating(ce.getStarRating());
+			returnList.add(dto);
+		}
+		return returnList;
+	}
 
 	@Override
 	public void CommentDelete(Long commentId) {
@@ -71,11 +77,12 @@ public class CommentServiceImpl implements CommentService {
 	}
 	// 수정
 	@Override
-	public void CommentUpdate(Long commentId,String editedCommentContent) {
+	public void CommentUpdate(Long commentId,CommentEntity editedCommentContent) {
 		// TODO Auto-generated method stub
 		Optional<CommentEntity> optional = commentRepository.findById(commentId);
 		optional.ifPresent(comment -> {
-            comment.setCommentContent(editedCommentContent);
+            comment.setCommentContent(editedCommentContent.getCommentContent());
+            comment.setStarRating(editedCommentContent.getStarRating());
             commentRepository.save(comment);
         });
 	}

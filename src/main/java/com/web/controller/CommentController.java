@@ -24,6 +24,7 @@ import com.web.domain.CommentEntity;
 import com.web.domain.Member;
 import com.web.dto.CommentDTO;
 import com.web.jwt.JWTUtil;
+import com.web.repository.CommentRepository;
 import com.web.service.CommentService;
 import com.web.service.MemberService;
 import com.web.service.TokenService;
@@ -37,6 +38,8 @@ public class CommentController {
 	private MemberService memberService;
 	@Autowired
 	private TokenService tockenService;
+	@Autowired
+	private CommentRepository commentRepository;
 	// 토큰을 사용하여 회원정보 불러오기 위해 선언
 	private final JWTUtil jwtUtil;
 
@@ -68,32 +71,31 @@ public class CommentController {
 //		return list;
 //	}
 //	페이징처리 - 되는거
-	@GetMapping("/CommentList")
-	public Page<CommentEntity> CommentList(@PageableDefault(size = 10, page = 0) Pageable pageable, @RequestParam String isbn) {
-		Page<CommentEntity> paging = commentService.getComments(pageable ,isbn);
-		System.out.println(paging);
-		return paging;
-	} 
-//	
 //	@GetMapping("/CommentList")
-//	public Map<String,Object> CommentList(@PageableDefault(size = 10, page = 0) Pageable pageable, @RequestParam String isbn) {
-//		Page<CommentDTO> list = commentService.getComments(pageable ,isbn);
-//		System.out.println(list);
-//		Map<String,Object> map = new HashMap<>();
-//	    map.put("list", list.getContent()); // 페이지의 내용을 리스트로 반환
-//	    map.put("totalElements", list.getTotalElements()); // 전체 엘리먼트 수 반환
-//	    map.put("totalPages", list.getTotalPages()); // 전체 페이지 수 반환
-//	    map.put("currentPage", list.getNumber()); 
-//		return map;
+//	public Page<CommentEntity> CommentList(@PageableDefault(size = 10, page = 0) Pageable pageable, @RequestParam String isbn) {
+//		Page<CommentEntity> paging = commentService.getComments(pageable ,isbn);
+//		System.out.println(paging);
+//		return paging;
 //	} 
 	
+	@PostMapping("/CommentList")
+	public Map<String,Object> CommentList(@RequestBody CommentDTO commentDTO,@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
+		Member currentMember = tockenService.getMemberByMemberNum(token);
+		List<CommentDTO> list = commentService.getComments(commentDTO.getIsbn());
+		Map<String,Object> map = new HashMap<>();
+	    map.put("list", list);
+	    map.put("member", currentMember.getMemberNum());
+		return map;
+	} 
+	 
 	@DeleteMapping("/CommentDelete/{commentId}")
 	public String CommentDelete(@PathVariable Long commentId) {
 		commentService.CommentDelete(commentId);
 		return "success";
 	}
 	@PostMapping("/CommentUpdate/{commentId}")
-	public String CommentUpdate(@PathVariable Long commentId, @RequestBody String editedCommentContent) {
+	public String CommentUpdate(@PathVariable Long commentId, @RequestBody CommentEntity editedCommentContent) {
+		System.out.println(".///////////////////////////////"+editedCommentContent);
 		commentService.CommentUpdate(commentId,editedCommentContent);
 		return "success";
 	}

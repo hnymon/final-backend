@@ -34,7 +34,7 @@ public class BoardController {
 	}
 	//게시판 전체 리스트 출력
 	@GetMapping("/BoardList")
-	public Map<String,Object> BoardList(@PageableDefault(size = 7, page = 0, sort = "boardSeq", direction = Sort.Direction.DESC) Pageable pageable) {
+	public Map<String,Object> BoardList(@PageableDefault(size = 10, page = 0, sort = "boardSeq", direction = Sort.Direction.DESC) Pageable pageable) {
 		Page<BoardEntity> list = boardService.BoardList(pageable);
 		Map<String,Object> map = new HashMap<>();
 		map.put("list", list);
