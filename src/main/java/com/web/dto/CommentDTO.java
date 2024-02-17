@@ -14,6 +14,7 @@ public class CommentDTO {
 	private String isbn;
 	private int starRating;
 	private String memberName; // 회원 이름인데 필요없으면 제외시키겠음
-	private Member member;
+	private Long memberNum;
 	
+
 }
