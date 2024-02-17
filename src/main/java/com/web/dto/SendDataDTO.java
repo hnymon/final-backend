@@ -9,4 +9,5 @@ public class SendDataDTO {
 	private int page;
 	private String sort;
 	private String isbn;
+	private int display;
 }

@@ -69,14 +69,13 @@ public class BookController {
 	   public ResponseEntity<Map<String, Object>> testBook3(@RequestBody SendDataDTO dto) {
 		System.out.println(dto);
 	       try {
-	           int display = 10;
 	           URI uri = UriComponentsBuilder
 	                   .fromUriString("https://openapi.naver.com")
 	                   .path("/v1/search/book.json")
 	                   .queryParam("query",dto.getQuery())
 	                   .queryParam("sort", dto.getSort())
-	                   .queryParam("display", display)
-	                   .queryParam("start", (display*(dto.getPage()-1))+1)
+	                   .queryParam("display", dto.getDisplay())
+	                   .queryParam("start", (dto.getDisplay()*(dto.getPage()-1))+1)
 	                   .encode(Charset.forName("UTF-8"))
 	                   .build()
 	                   .toUri();
