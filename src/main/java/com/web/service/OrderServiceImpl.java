@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import com.web.domain.Order;
 import com.web.domain.OrderDetail;
 import com.web.dto.DeliveryInfo;
 import com.web.dto.MyOrderDTO;
+import com.web.dto.MyOrderPageDTO;
 import com.web.dto.OrderAdminDTO;
 import com.web.dto.OrderDto;
 import com.web.repository.CartItemRepogitory;
@@ -65,6 +68,9 @@ public class OrderServiceImpl implements OrderService{
 					orderDetail = OrderDetail.builder()
 							.isbn(orderDto.getIsbn().get(i))
 							.count(orderDto.getBookCount().get(i))
+							.title(orderDto.getTitle().get(i))
+							.thumbnail(orderDto.getThumbnail().get(i))
+							.price(orderDto.getPrice().get(i))
 							.order(order)
 							.build();
 					deRepo.save(orderDetail);
@@ -72,7 +78,7 @@ public class OrderServiceImpl implements OrderService{
 				
 				for(int i = 0 ; i<orderDto.getIsbn().size(); i++) {
 					String isbn = orderDto.getIsbn().get(i);
-					CartItem cartItem = itemRepo.findByIsbn13(isbn);
+					CartItem cartItem = itemRepo.findByIsbn(isbn);
 					if (cartItem != null) {
 				        itemRepo.delete(cartItem);
 				    } else {
@@ -120,14 +126,22 @@ public class OrderServiceImpl implements OrderService{
 	}
 	
 	@Override
-	public List<MyOrderDTO> loadMyOrder(String token) {
+	public MyOrderPageDTO loadMyOrder(Pageable pageable, String token) {
 		Long memberNum = tService.getMemberNum(token);
-		List<Order> orderList = oRepo.findByMemberMemberNum(memberNum);
+		Page<Order> orderList = oRepo.findByMemberMemberNum(pageable, memberNum);
+		
 		List<MyOrderDTO> orderDtoList = orderList.stream()
 				.map(o -> new MyOrderDTO(o))
 				.collect(Collectors.toList());
 		
-		return orderDtoList;
+		MyOrderPageDTO orderPage = new MyOrderPageDTO();
+		orderPage.setMyOrder(orderDtoList);
+		orderPage.setCount(orderPage.getCount());
+		orderPage.setSize(orderPage.getSize());
+		orderPage.setPage(orderPage.getPage());
+		
+		
+		return orderPage;
 	}
 	
 	

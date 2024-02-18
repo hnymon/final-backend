@@ -2,6 +2,8 @@ package com.web.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 
@@ -29,4 +31,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>{
 	Optional<Member> findByUsernameAndMemberNameAndBirthdayAndPhoneNum(String username, String memberName, String birthday, String phoneNum);
 	// 비밀번호 찾기 - 이메일로 찾기
 	Optional<Member> findByUsernameAndMemberNameAndBirthdayAndEmail(String username, String memberName, String birthday, String email);
+
+	Page<Member> findByMemberNum(Pageable pageable, Long memberNum);
 }

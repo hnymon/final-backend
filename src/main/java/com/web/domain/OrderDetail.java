@@ -44,6 +44,9 @@ public class OrderDetail extends BaseEntity {
    private Order order;
    
    private String isbn;
+   private String title;
+   private String thumbnail;   
+   private Long price;
    private Long count;
    
    @ColumnDefault("0")

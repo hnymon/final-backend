@@ -15,11 +15,14 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.web.domain.CheckMemberEmail;
 import com.web.domain.Member;
@@ -284,6 +287,22 @@ public class MemberServiceImpl implements MemberService{
 		memberRepository.save(member);
 		return "Success";
 	}
+	
+	@Override
+	@Transactional
+	public Page<Member> getMemberList(Pageable pageable) {
+		Page<Member> member =  memberRepository.findAll(pageable);
+		return member;
+	}
+	
+	@Override
+	@Transactional
+	public Page<Member> searchMemberNum(Pageable pageable, String term) {
+		Long memberNum = Long.parseLong(term);
+		Page<Member> member = memberRepository.findByMemberNum(pageable, memberNum);
+		return member;
+	}
+
 	
 	
 }

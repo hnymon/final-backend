@@ -11,11 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderDto {
 	private List<String> isbn;
+	private List<String> title;
+	private List<String> thumbnail;
+	private List<Long> price;
 	private List<Long> bookCount;
-//	private List<Long> bookPrice;
 	private Long totalPrice;
 	
 	private DeliveryInfo deliveryInfo;
-//	private Long deliveryFee;
 	
 }
