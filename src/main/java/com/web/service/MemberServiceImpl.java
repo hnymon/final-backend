@@ -302,7 +302,20 @@ public class MemberServiceImpl implements MemberService{
 		Page<Member> member = memberRepository.findByMemberNum(pageable, memberNum);
 		return member;
 	}
-
+	// 회원 탈퇴
+	@Override
+	public String deleteMember(JoinDTO joinDTO) {
+		// TODO Auto-generated method stub
+		try {
+			memberRepository.deleteById(joinDTO.getMemberNum());
+			return "Success";
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "Failure";
+		}
+	}
+	
 	
 	
 }
