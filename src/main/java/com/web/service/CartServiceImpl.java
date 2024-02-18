@@ -69,10 +69,13 @@ public class CartServiceImpl implements CartService {
             }
             
          // 중복 체크
-            if (!isDuplicateCartItem(cartdto.getIsbn13(), cart)) {
+            if (!isDuplicateCartItem(cartdto.getIsbn(), cart)) {
                 // 중복되지 않는 경우에만 CartItem 추가
             	CartItem cartItem = CartItem.builder()
-                        .isbn13(cartdto.getIsbn13())
+                        .isbn(cartdto.getIsbn())
+                        .title(cartdto.getTitle())
+                        .salePrice(cartdto.getSalePrice())
+                        .thumbnail(cartdto.getThumbnail())
                         .count(cartdto.getCount())
                         .cart(cart)
                         .build();
@@ -89,8 +92,8 @@ public class CartServiceImpl implements CartService {
 	}
 	
     // 중복 체크 메서드
-    private boolean isDuplicateCartItem(String isbn13, Cart cart) {
-    	CartItem cartItem = itemRepo.findByIsbn13AndCart(isbn13, cart);
+    private boolean isDuplicateCartItem(String isbn, Cart cart) {
+    	CartItem cartItem = itemRepo.findByIsbnAndCart(isbn, cart);
         if(cartItem == null) {
         	return false;
         }
@@ -102,7 +105,7 @@ public class CartServiceImpl implements CartService {
 	public ResponseEntity<String> deleteCartitem(String isbn) {
 
 		try {
-			itemRepo.deleteByIsbn13(isbn);
+			itemRepo.deleteByIsbn(isbn);
 			return ResponseEntity.ok().build();
 			
 		} catch (Exception e) {

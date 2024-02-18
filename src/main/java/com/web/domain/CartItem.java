@@ -32,7 +32,10 @@ public class CartItem extends BaseEntity{
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CART_ITEM_SEQ_GENERATOR" )
 	private Long Id;
 
-	private String isbn13;
+	private String isbn;
+	private String title;
+	private Long salePrice;
+	private String thumbnail;
 	
 	@ManyToOne(fetch = FetchType.LAZY) @JsonIgnore
 	@JoinColumn(name="CART_ID")

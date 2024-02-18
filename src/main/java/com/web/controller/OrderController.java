@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,13 @@ import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import com.web.dto.DeliveryInfo;
 import com.web.dto.MyOrderDTO;
+import com.web.dto.MyOrderPageDTO;
 import com.web.dto.OrderAdminDTO;
 import com.web.dto.OrderDto;
 import com.web.service.OrderService;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,8 +105,9 @@ public class OrderController {
     }
     
     @GetMapping("/order/loadMyOrder")
-    public List<MyOrderDTO> loadMyOrder(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
-    	return orderService.loadMyOrder(token);
+    public MyOrderPageDTO loadMyOrder(@PageableDefault(size=10, sort="id", direction=Sort.Direction.DESC)Pageable pageable, 
+    		@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+    	return orderService.loadMyOrder(pageable, token);
     }
     
     // 추가

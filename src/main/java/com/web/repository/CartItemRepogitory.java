@@ -8,11 +8,11 @@ import com.web.domain.Member;
 
 public interface CartItemRepogitory extends CrudRepository<CartItem, Long> {
 
-	CartItem findByIsbn13(String isbn13);
+	CartItem findByIsbn(String isbn);
 
-	CartItem findByIsbn13AndCart(String isbn13, Cart cart);
+	CartItem findByIsbnAndCart(String isbn, Cart cart);
 
-	void deleteByIsbn13(String isbn);
+	void deleteByIsbn(String isbn);
 
 	
 }
