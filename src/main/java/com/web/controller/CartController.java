@@ -34,7 +34,7 @@ public class CartController {
 	//장바구니에 추가
 	@PostMapping("/add")
 	public void addBook(@RequestBody CartItemDto cartDto, @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
-		System.out.println(cartDto.getIsbn13() +" "+  cartDto.getCount() + " "+ token);
+		System.out.println(cartDto +" "+  cartDto.getCount() + " "+ token);
 		cartService.addCart(cartDto, token);
 	}
 	

@@ -2,6 +2,9 @@ package com.web.service;
 
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.web.domain.Member;
 import com.web.dto.JoinDTO;
 
@@ -26,4 +29,8 @@ public interface MemberService {
 	public Map<String, Object> findPwd(JoinDTO joinDTO);
 	// 비밀번호 재설정
 	public String editPwd(JoinDTO joinDTO);
+	
+	public Page<Member> getMemberList(Pageable pageable);
+	
+	public Page<Member> searchMemberNum(Pageable pageable, String term);
 }

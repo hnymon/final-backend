@@ -97,4 +97,7 @@ public class Member extends BaseEntity{
 	@OneToMany(mappedBy = "member", cascade=CascadeType.ALL)
 	private List<OneToOneInquiryEntity> Inquery = new ArrayList<>();
 	
+	@OneToMany(mappedBy = "member", cascade=CascadeType.ALL)
+	private List<Order> order = new ArrayList<>();
+	
 }

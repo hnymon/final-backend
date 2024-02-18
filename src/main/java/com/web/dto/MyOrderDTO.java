@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MyOrderDTO {
 	
+	private Long id;
 	private Long totalPrice;
 	private int deliveryFee;
 	private String approval;
@@ -21,6 +22,7 @@ public class MyOrderDTO {
 	private LocalDateTime orderDate;
 	
 	public MyOrderDTO(Order order) {
+		this.id= order.getId();
 		this.totalPrice = order.getTotalPrice();
 		this.deliveryFee = order.getDeliveryFee();
 		this.approval = order.getApproval();
