@@ -159,6 +159,7 @@ public class OrderServiceImpl implements OrderService{
 			dto.setTotalPrice(odr.getTotalPrice());
 			dto.setDeliveryFee(odr.getDeliveryFee());
 			odr.updateApproval();
+			oRepo.save(odr);
 			dto.setApproval(odr.getApproval());
 			dto.setOrderdetail(odr.getOrderdetail());
 			dto.setCreateDate(odr.getCreateDate());
