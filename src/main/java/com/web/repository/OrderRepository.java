@@ -15,5 +15,6 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
 	List<Order> findByMemberMemberNum(Long memberNum);
 	
 	Page<Order> findByMemberMemberNum(Pageable pageable, Long memberNum);
+//	Order findByOrderDetailOrderDetailId(Long odtNum);
 	
 }

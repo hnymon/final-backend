@@ -30,7 +30,10 @@ public interface MemberService {
 	// 비밀번호 재설정
 	public String editPwd(JoinDTO joinDTO);
 	
-	public Page<Member> getMemberList(Pageable pageable);
-	
+	public Page<Member> getMemberList(Pageable pageable);	
 	public Page<Member> searchMemberNum(Pageable pageable, String term);
+
+	public void deleteMemberInAdmin(Long memberNum);
+	
+
 }
