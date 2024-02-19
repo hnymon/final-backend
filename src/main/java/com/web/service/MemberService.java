@@ -32,7 +32,10 @@ public interface MemberService {
 	// 회원 탈퇴
 	public String deleteMember(JoinDTO joinDTO);
 	
-	public Page<Member> getMemberList(Pageable pageable);
-	
+	public Page<Member> getMemberList(Pageable pageable);	
 	public Page<Member> searchMemberNum(Pageable pageable, String term);
+
+	public void deleteMemberInAdmin(Long memberNum);
+	
+
 }
