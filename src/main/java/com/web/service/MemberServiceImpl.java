@@ -303,6 +303,12 @@ public class MemberServiceImpl implements MemberService{
 		return member;
 	}
 
+	@Override
+	@Transactional
+	public void deleteMemberInAdmin(Long memberNum) {
+		memberRepository.deleteByMemberNum(memberNum);
+	}
+
 	
 	
 }

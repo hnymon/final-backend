@@ -192,6 +192,8 @@ public class OrderServiceImpl implements OrderService{
 			OrderDetail od = deRepo.findById(dto.getOdtNum()).get();
 			od.setDetailApproval(!od.getDetailApproval());
 			deRepo.save(od);
+//			Order order = oRepo.findByOrderDetailOrderDetailId(dto.getOdtNum());
+//			order.updateApproval();
 			System.out.println("gd");
 			System.out.println(od);
 			return "Success";
