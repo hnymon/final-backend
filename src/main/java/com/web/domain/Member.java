@@ -67,7 +67,7 @@ public class Member extends BaseEntity{
     private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
     private String refreshToken; // 리프레시 토큰 
     
-    @OneToOne(mappedBy = "member")
+    @OneToOne(mappedBy = "member", cascade=CascadeType.ALL)
     private Cart cart;
     
 //	private String locked; 		//정지 여부
