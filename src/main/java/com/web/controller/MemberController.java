@@ -196,4 +196,11 @@ public class MemberController {
 		String result = memberService.editPwd(joinDTO);
 		return result;
 	}
+	
+	// 회원 탈퇴
+	@PostMapping("/deleteMember")
+	public String deleteMember(@RequestBody JoinDTO joinDTO){
+		String res = memberService.deleteMember(joinDTO);
+		return res;
+	}
 }
