@@ -19,6 +19,6 @@ public interface OrderService {
 	public List<OrderAdminDTO> getOrderList();
 	public List<OrderAdminDTO> getOrderDetailList(Long id);
 	public String approval(OrderAdminDTO dto);
-	
+	public String approvalModal(Long detailId, Long orderId);
 	public MyOrderPageDTO loadMyOrder(Pageable pageable, String token);
 }
