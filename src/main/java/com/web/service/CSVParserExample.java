@@ -56,7 +56,7 @@ public class CSVParserExample {
 	
 //	bulid 방식
 //	@PostConstruct // 서버재실행될때마다  메서드 작동
-	@Scheduled(cron = "0 0 */1 * * *") // 범인 씹새기
+	@Scheduled(cron = "0 0 0 */1 * *") // 범인 씹새기
 	public void test() { 
 	    libraryRepository.deleteAllInBatch(); // 전체삭제 서버재실행될때마다 삭제
 	    String csvFilePath = "src/main/resources/NationalLibraryStandardData.csv";
