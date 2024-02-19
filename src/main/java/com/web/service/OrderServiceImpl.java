@@ -204,4 +204,18 @@ public class OrderServiceImpl implements OrderService{
 			return "Failure";
 		}
 	}
+	
+	@Override
+	public String approvalModal(Long detailId, Long orderId) {
+		try {
+			OrderDetail od = deRepo.findById(detailId).get();
+			od.setDetailApproval(!od.getDetailApproval());
+			deRepo.save(od);
+			Order order = oRepo.findById(orderId).get();
+			order.updateApproval();
+			return "Success";
+		} catch (Exception e) {
+			return "Failure";
+		}
+	}
 }
