@@ -41,6 +41,9 @@ public class CartServiceImpl implements CartService {
 		if(tService.existMember(token)) {
 			Member member = tService.getMemberByMemberNum(token);
 			Cart cart = cRepo.findByMember(member);
+			if(cart == null) {
+				return null;
+			}
 			List<CartItemDto> cartItems = cart.getCartItems().stream()
 					.map(e -> new CartItemDto(e))
 					.collect(Collectors.toList());
