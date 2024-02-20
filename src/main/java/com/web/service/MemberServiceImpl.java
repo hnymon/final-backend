@@ -24,16 +24,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.web.domain.Cart;
 import com.web.domain.CheckMemberEmail;
 import com.web.domain.Member;
 import com.web.domain.Role;
 import com.web.dto.JoinDTO;
+import com.web.repository.CartRepogitory;
 import com.web.repository.CheckMemberEmailRepository;
 import com.web.repository.MemberRepository;
 @Service
 public class MemberServiceImpl implements MemberService{
 	@Autowired
 	private MemberRepository memberRepository;
+	
+	@Autowired
+	CartRepogitory cRepo;
+	
 	@Autowired
 	private CheckMemberEmailRepository checkMemberEmailRepository;
 	
@@ -177,6 +183,12 @@ public class MemberServiceImpl implements MemberService{
 				.role(Role.USER)
 				.build();
 		memberRepository.save(member);
+		
+		Cart cart = Cart.builder()
+				.member(member)
+				.build();
+		
+		cRepo.save(cart);
 		return "ok";
 	}
 	// 멤버DTO 가 포함된 DTO 를 만들자 > ex) 수정된 정보 + memberDTO >> 
