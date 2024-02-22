@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,9 +35,12 @@ public class BookController {
 	
 	@Autowired
 	private CommentRepository commentRepository;
-	
-	private final String CLIENT_ID = "qEki3LfUNrEp3vUSBXmm";
-	private final String CLIENT_SECRET = "9HVDluOLFB";
+	@Value("${myapp.naver.api.client-name}")
+	private String CLIENT_ID;
+	@Value("${myapp.naver.api.client-secret}")
+	private String CLIENT_SECRET;
+	@Value("${myapp.kakao.api.secret-key}")
+	private String SECRET_KEY;
 	
 	// 네이버 책검색 api List
 //    @PostMapping("/testBook3")
@@ -183,7 +187,6 @@ public class BookController {
         }
     }
 	
-//	private final String key = "05377ae946110607a0d89dae94e81960";
 //	// 카카오 다음 책 검색 api
 //	@PostMapping("/testBook2")
 //	public Map<String, Object> testBook2(@RequestBody SendDataDTO dto) {
