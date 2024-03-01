@@ -29,7 +29,6 @@ public class CommentServiceImpl implements CommentService {
 			if (optional.isPresent()) {
 				return "Failure";
 			}
-//			boolean a = commentEntity.getMember().getMemberName() == null;
 			if(commentEntity.getMember().getMemberName() == null) {
 				commentEntity.setMemberName(commentEntity.getMember().getSocialType()+" 회원"+ commentEntity.getMember().getMemberNum() );
 			}
@@ -46,12 +45,6 @@ public class CommentServiceImpl implements CommentService {
 		// TODO Auto-generated method stub
 		return commentRepository.findAll();
 	}
-	// 페이징처리 Entity형식
-//	@Override
-//	public Page<CommentEntity> getComments(Pageable pageable, String isbn) {
-////		System.out.println(commentRepository.findAllByIsbn(pageable,isbn)); // fintBy뒤에는 대문자
-//		return commentRepository.findByIsbn(pageable, isbn);
-//	}
 	@Override
 	public List<CommentDTO> getComments(String isbn) {
 		List<CommentEntity> list = commentRepository.findByIsbn(isbn);

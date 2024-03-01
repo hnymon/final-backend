@@ -54,12 +54,10 @@ public class OneToOneInquiryController {
 			@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token,
 			@PageableDefault(size = 10, page = 0, sort = "inquiryId", direction = Sort.Direction.DESC) Pageable pageable) {
 		Member memberNum = tockenService.getMemberByMemberNum(token);
-//		System.out.println(memberNum.getMemberNum());
 		Page<OneToOneInquiryEntity> paging = oneToOneLnqueryService.InquiryPaging(pageable, memberNum.getMemberNum());
 		oneToOneLnqueryService.InquiryPaging(pageable, memberNum.getMemberNum());
 		Map<String, Object> map = new HashMap<>();
 		map.put("paging", paging);
-//		System.out.println(paging); 
 		return map;
 
 	}
@@ -100,16 +98,6 @@ public class OneToOneInquiryController {
 	    map.put("currentPage", list.getNumber()); 
 		return map;
 	}
-	
-//	@PostMapping("/InquiryList")
-//	public void InquiryList(
-//	        @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
-//	    Member memberNum = tockenService.getMemberByMemberNum(token);
-//	    System.out.println("ㅎㅇ");
-//	    System.out.println(memberNum);
-//	    List<OneToOneInquiryEntity> list = oneToOneInquiryService.getList(memberNum.getMemberNum());
-//	}
-//	-----------------------------------
 	// 1대1 상세정보
 	@PostMapping("/InquiryDetail/{inquiryId}")
 	public OneToOneInquiryEntity LnqueryDetail(@PathVariable Long inquiryId) {

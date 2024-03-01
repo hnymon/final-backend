@@ -65,6 +65,7 @@ public class CSVParserExample {
 	        List<String[]> libraryList = reader.readAll(); // CSV 파일을 읽어와서 리스트에 저장
 	        List<SeoulPublicLibrary> list = new ArrayList<>();
 	        for (String[] line : libraryList) { 
+	        	//for 문을 이용하여 build 방식으로 객체 생성후 DB에 저장 
 	            SeoulPublicLibrary seoulPublicLibrary = 
 	            		SeoulPublicLibrary.builder()
 	            			.lbrryNm(line[0])

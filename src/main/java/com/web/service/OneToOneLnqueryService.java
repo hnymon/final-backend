@@ -22,9 +22,6 @@ public interface OneToOneLnqueryService {
 	// 문의  amdin 전체 리스트
 	public Page<InquiryDTO> InquiryAllList(Pageable pageable);
 	
-//	public void InquiryPaging (Pageable pageable, Long memberNum);
-	List<OneToOneInquiryEntity> getList(Long emberNum);
-	//
 	public OneToOneInquiryEntity InquiryDetail(Long inquiryId);
 	
 	// 1대 1 문의 답변

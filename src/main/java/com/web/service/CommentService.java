@@ -14,7 +14,6 @@ public interface CommentService {
 	// 댓글 뽑아내기
 	public List<CommentEntity> commnetList();
 	
-//	Page<CommentEntity> getComments(Pageable pageable, String isbn);
 	List<CommentDTO> getComments(String isbn);
 	
 	public void CommentDelete(Long commentId);

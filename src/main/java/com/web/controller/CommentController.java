@@ -64,19 +64,6 @@ public class CommentController {
 		// 토큰이 없는 경우 또는 올바른 형식이 아닌 경우 등의 예외 처리
 		// 여기서는 일단 댓글을 저장하지 않고 null을 반환하도록 했습니다.
 	}
-//	전체 리스트
-//	@GetMapping("/CommentList")
-//	public List<CommentEntity> CommentList() {
-//		List<CommentEntity> list = commentService.commnetList();
-//		return list;
-//	}
-//	페이징처리 - 되는거
-//	@GetMapping("/CommentList")
-//	public Page<CommentEntity> CommentList(@PageableDefault(size = 10, page = 0) Pageable pageable, @RequestParam String isbn) {
-//		Page<CommentEntity> paging = commentService.getComments(pageable ,isbn);
-//		System.out.println(paging);
-//		return paging;
-//	} 
 	
 	@PostMapping("/CommentList")
 	public Map<String,Object> CommentList(@RequestBody CommentDTO commentDTO,@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
