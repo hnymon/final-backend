@@ -300,9 +300,509 @@ public class CrawlingYes24 {
 [Crawling_Yes24 전체 코드 보러 가기](https://github.com/hnymon/final-backend/blob/master/src/main/java/com/web/crawling/CrawlingYes24.java)
 
 ### 3. 책 상세 정보와 수량을 장바구니에 담고 결제하기 구현
-   text
-  
- [코드 보러 가기]()
+- 장바구니 Controller & ServiceImpl
+
+<details>
+	<summary>Controller 코드 보기</summary>
+
+```java
+@RestController
+@RequestMapping("/cart")
+public class CartController {
+	
+	@Autowired
+	CartService cartService;
+	
+	//장바구니 목록 보기
+	@GetMapping
+	public List<CartItemDto> cartList(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
+		return cartService.cartList(token);
+	}
+	
+	//장바구니에 추가
+	@PostMapping("/add")
+	public void addBook(@RequestBody CartItemDto cartDto, @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+		System.out.println(cartDto +" "+  cartDto.getCount() + " "+ token);
+		cartService.addCart(cartDto, token);
+	}
+	
+	//장바구니 삭제
+	@Transactional
+	@DeleteMapping("/delete/{isbn}")
+	public void deleteBook(@PathVariable String isbn) {
+		cartService.deleteCartitem(isbn);
+	}
+	
+	@GetMapping("/count")
+	public int CartItemCount(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
+		return cartService.countItem(token);
+	}
+
+}
+
+
+```
+
+</details>
+
+<details>
+	<summary>ServiceImpl 코드 보기</summary>
+
+```java
+@Service
+public class CartServiceImpl implements CartService {
+	
+	@Autowired
+	CartRepogitory cRepo;
+	
+	@Autowired
+	CartItemRepogitory itemRepo;
+	
+	@Autowired
+	MemberRepository mRepo;
+	
+	@Autowired
+	TokenService tService;
+	
+	@Override
+	public List<CartItemDto> cartList(String token) {
+		if(tService.existMember(token)) {
+			Member member = tService.getMemberByMemberNum(token);
+			Cart cart = cRepo.findByMember(member);
+			if(cart == null) {
+				return null;
+			}
+			List<CartItemDto> cartItems = cart.getCartItems().stream()
+					.map(e -> new CartItemDto(e))
+					.collect(Collectors.toList());
+			return cartItems;
+		}
+		return null;
+	}
+	
+	@Override
+	public void addCart(CartItemDto cartdto, String token) {
+		if (tService.existMember(token)) {
+			Member member = tService.getMemberByMemberNum(token);
+            Cart cart = cRepo.findByMember(member);
+            if (cart == null) {
+                // 검색 결과가 없는 경우에만 새로운 Cart 생성
+                cart = Cart.builder()
+                        .member(member)
+                        .build();
+                cRepo.save(cart);
+            }
+            
+         // 중복 체크
+            if (!isDuplicateCartItem(cartdto.getIsbn(), cart)) {
+                // 중복되지 않는 경우에만 CartItem 추가
+            	CartItem cartItem = CartItem.builder()
+                        .isbn(cartdto.getIsbn())
+                        .title(cartdto.getTitle())
+                        .salePrice(cartdto.getSalePrice())
+                        .thumbnail(cartdto.getThumbnail())
+                        .count(cartdto.getCount())
+                        .cart(cart)
+                        .build();
+                itemRepo.save(cartItem);
+            } else {
+                throw new RuntimeException("이 상품은 이미 장바구니에 존재합니다.");
+            }
+        }else {
+        	throw new RuntimeException("로그인 해주세요");
+        }
+	}
+	
+    // 중복 체크 메서드
+    private boolean isDuplicateCartItem(String isbn, Cart cart) {
+    	CartItem cartItem = itemRepo.findByIsbnAndCart(isbn, cart);
+        if(cartItem == null) {
+        	return false;
+        }
+        return true;
+    }
+
+	@Override
+	public ResponseEntity<String> deleteCartitem(String isbn) {
+		try {
+			itemRepo.deleteByIsbn(isbn);
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 실패");
+		}
+	}
+
+	@Override
+	@Transactional
+	public int countItem(String token) {
+		if(tService.existMember(token)) {
+			Member member = tService.getMemberByMemberNum(token);
+			int result = member.getCart().getCartItems().size();
+			System.out.println("장바구니 개수" + result);
+			return result;
+		}
+		return 0;
+	}
+}
+```
+
+</details>
+
+- 결제하기 Controller & ServiceImpl
+
+
+<details>
+	<summary>Controller 코드 보기</summary>
+
+```java
+package com.web.controller;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
+import com.web.dto.DeliveryInfo;
+import com.web.dto.MyOrderDTO;
+import com.web.dto.MyOrderPageDTO;
+import com.web.dto.OrderAdminDTO;
+import com.web.dto.OrderDto;
+import com.web.service.OrderService;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import lombok.extern.slf4j.Slf4j;
+
+@RestController
+@Slf4j
+public class OrderController {
+	
+	@Value("${iamport.key}")
+    private String restApiKey;
+    @Value("${iamport.secret}")
+    private String restApiSecret;
+
+    private IamportClient iamportClient;
+    
+    @Autowired
+    private OrderService orderService;
+
+    @PostConstruct
+    public void init() {
+        this.iamportClient = new IamportClient(restApiKey, restApiSecret);
+    }
+
+//    @PostMapping("/order/payment")
+//    public ResponseEntity<String> paymentComplete(@Login SessionUser sessionUser, @RequestBody List<OrderSaveDto> orderSaveDtos) throws IOException {
+//        String orderNumber = String.valueOf(orderSaveDtos.get(0).getOrderNumber());
+//        try {
+//            Long userId = sessionUser.getUserIdNo();
+//            paymentService.saveOrder(userId, orderSaveDtos);
+//            log.info("결제 성공 : 주문 번호 {}", orderNumber);
+//            return ResponseEntity.ok().build();
+//        } catch (RuntimeException e) {
+//            log.info("주문 상품 환불 진행 : 주문 번호 {}", orderNumber);
+//            String token = refundService.getToken(apiKey, secretKey);
+//            refundService.refundWithToken(token, orderNumber, e.getMessage());
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//        }
+//    }
+    
+    @PostMapping("/order/add")
+    public ResponseEntity<String> paymentComplete(@RequestBody OrderDto orderdto, @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+    	try {
+    		orderService.addOrder(orderdto, token);
+    		return ResponseEntity.ok().build();
+			
+		} catch (RuntimeException e) {
+          log.info("주문 상품 환불 진행 : 주문 번호 {}");
+//          String pToken = refundService.getToken(apiKey, secretKey);
+//          refundService.refundWithToken(token, orderNumber, e.getMessage());
+          return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+      }
+    }
+ 
+ 
+    @PostMapping("/payment/validation/{imp_uid}")
+    public IamportResponse<Payment> validateIamport(@PathVariable String imp_uid) throws IamportResponseException, IOException {
+        IamportResponse<Payment> payment = iamportClient.paymentByImpUid(imp_uid);
+        log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
+        return payment;
+    }
+    
+    @GetMapping("/order/loadDefaultDelivery")
+    public DeliveryInfo loadDefaultDelivery(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+    	return orderService.loadDefaultDelivery(token);
+    }
+    
+    @GetMapping("/order/loadDeliveryList")
+    public List<DeliveryInfo> loadDeliveryList(@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+    	return orderService.loadDeliveryList(token);
+    }
+    
+    @GetMapping("/order/loadMyOrder")
+    public MyOrderPageDTO loadMyOrder(@PageableDefault(size=10, sort="id", direction=Sort.Direction.DESC)Pageable pageable, 
+    		@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+    	return orderService.loadMyOrder(pageable, token);
+    }
+    
+    // 추가
+    @PostMapping("/adminOrder/getList")
+    public Map<String, Object> getOrderList() {
+    	Map<String, Object> map = new HashMap<>();
+    	try {
+				List<OrderAdminDTO> list = orderService.getOrderList();
+				map.put("orderList", list);
+				map.put("result", "Success");
+			return map;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	map.put("result", "Failure");
+    	return map;
+    }
+    @PostMapping("/adminOrder/getOrderDetail")
+    public Map<String, Object> getOrderDetail(@RequestBody OrderAdminDTO id) {
+    	System.out.println(id);
+    	System.out.println("////////////////////////////////////////////////");
+    	Map<String, Object> map = new HashMap<>();
+    	try {
+				List<OrderAdminDTO> list = orderService.getOrderDetailList(id.getId());
+				map.put("odt", list);
+				System.out.println(list);
+				map.put("result", "Success");
+			return map;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	map.put("result", "Failure");
+    	return map;
+    	
+    	
+    }
+    
+    @PostMapping("/adminOrder/approval")
+    public String oderDetailApproval(@RequestBody OrderAdminDTO dto) {
+    	System.out.println(dto);
+    	String res = orderService.approval(dto);
+    	return res;
+    }
+}
+
+```
+
+</details>
+
+
+<details>
+	<summary>ServiceImpl 코드 보기</summary>
+
+```java
+@Service
+public class OrderServiceImpl implements OrderService{
+	
+	@Autowired
+	OrderRepository oRepo;
+	
+	@Autowired
+	OrderDetailRepository deRepo;
+	
+	@Autowired
+	TokenService tService;
+	
+	@Autowired
+	MemberAddressRepository addrRepo;
+	
+	@Autowired
+	CartItemRepogitory itemRepo;
+	
+
+	@Override
+	@Transactional
+	public void addOrder(OrderDto orderDto, String token) {
+		System.out.println(orderDto);
+		try {
+			if(tService.existMember(token)) {
+				Member member = tService.getMemberByMemberNum(token);
+				System.out.println(member);
+				Order order = Order.builder()
+						.member(member)
+						.totalPrice(orderDto.getTotalPrice())
+						.build();
+				oRepo.save(order);
+				
+				System.out.println(orderDto.getIsbn().size());
+				System.out.println(orderDto.getIsbn().get(0));
+				System.out.println("책수량 "+ orderDto.getBookCount().get(0));
+				
+				OrderDetail orderDetail;
+				for(int i = 0 ; i<orderDto.getIsbn().size(); i++) {
+					orderDetail = OrderDetail.builder()
+							.isbn(orderDto.getIsbn().get(i))
+							.count(orderDto.getBookCount().get(i))
+							.title(orderDto.getTitle().get(i))
+							.thumbnail(orderDto.getThumbnail().get(i))
+							.price(orderDto.getPrice().get(i))
+							.order(order)
+							.build();
+					deRepo.save(orderDetail);
+				}
+				
+				for(int i = 0 ; i<orderDto.getIsbn().size(); i++) {
+					String isbn = orderDto.getIsbn().get(i);
+					CartItem cartItem = itemRepo.findByIsbn(isbn);
+					if (cartItem != null) {
+				        itemRepo.delete(cartItem);
+				    } else {
+				        System.out.println("해당하는 CartItem이 없습니다.");
+				    }
+				}
+				
+				
+			}else {
+				System.out.println("로그인 해주세요");
+			}
+
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+	}
+	
+	@Override
+	public DeliveryInfo loadDefaultDelivery(String token) {
+		Long memberNum = tService.getMemberNum(token);
+		System.out.println("memberNum"+memberNum);
+		MemberDeliveryAddress defaultAddress = addrRepo.findByIsDefaultAndMemberMemberNum(true, memberNum);
+		System.out.println("기본배송지"+defaultAddress);
+		if(defaultAddress != null) {
+			return new DeliveryInfo(defaultAddress);
+		}
+		return null;
+		
+	}
+	
+	@Override
+	public List<DeliveryInfo> loadDeliveryList(String token) {
+		Long memberNum = tService.getMemberNum(token);
+		System.out.println("memberNum"+memberNum);
+		List<MemberDeliveryAddress> deliveryList = addrRepo.findAllByMemberMemberNum(memberNum);
+		System.out.println("배송리스트"+deliveryList);
+		
+		List<DeliveryInfo> deliveryInfoList = deliveryList.stream()
+				.map(d -> new DeliveryInfo(d))
+				.collect(Collectors.toList());
+		
+		return deliveryInfoList;
+	}
+	
+	@Override
+	public MyOrderPageDTO loadMyOrder(Pageable pageable, String token) {
+		Long memberNum = tService.getMemberNum(token);
+		Page<Order> orderList = oRepo.findByMemberMemberNum(pageable, memberNum);
+		
+		List<MyOrderDTO> orderDtoList = orderList.stream()
+				.map(o -> new MyOrderDTO(o))
+				.collect(Collectors.toList());
+		
+		MyOrderPageDTO orderPage = new MyOrderPageDTO();
+		orderPage.setMyOrder(orderDtoList);
+		orderPage.setCount(orderPage.getCount());
+		orderPage.setSize(orderPage.getSize());
+		orderPage.setPage(orderPage.getPage());
+		
+		
+		return orderPage;
+	}
+	
+	
+	@Override
+	public List<OrderAdminDTO> getOrderList() {
+		// TODO Auto-generated method stub
+		List<Order> orderList = new ArrayList<>();
+		orderList = oRepo.findAll(Sort.by(Sort.Direction.DESC, "id"));
+		List<OrderAdminDTO> returnList = new ArrayList<>();
+		for(Order odr : orderList) {
+			System.out.println(odr);
+			OrderAdminDTO dto = new OrderAdminDTO();
+			dto.setId(odr.getId());
+			dto.setMemberNum(odr.getMember().getMemberNum());
+			dto.setTotalPrice(odr.getTotalPrice());
+			dto.setDeliveryFee(odr.getDeliveryFee());
+			odr.updateApproval();
+			oRepo.save(odr);
+			dto.setApproval(odr.getApproval());
+			dto.setOrderdetail(odr.getOrderdetail());
+			dto.setCreateDate(odr.getCreateDate());
+			returnList.add(dto);
+		}
+		return returnList;
+	}
+	
+	@Override
+	public List<OrderAdminDTO> getOrderDetailList(Long id) {
+		// TODO Auto-generated method stub
+		List<OrderDetail> orderList = new ArrayList<>();
+		orderList = deRepo.findAllByOrderId(id);
+		List<OrderAdminDTO> returnList = new ArrayList<>();
+		for(OrderDetail odt : orderList) {
+			OrderAdminDTO dto = new OrderAdminDTO();
+			dto.setOrderNum(odt.getOrder().getId());
+			dto.setCount(odt.getCount());
+			dto.setIsbn(odt.getIsbn());
+			dto.setOdtNum(odt.getId());
+			dto.setDetailApproval(odt.getDetailApproval());
+			returnList.add(dto);
+		}
+		return returnList;
+	}
+
+	@Override
+	public String approval(OrderAdminDTO dto) {
+		// TODO Auto-generated method stub
+		try {
+			OrderDetail od = deRepo.findById(dto.getOdtNum()).get();
+			od.setDetailApproval(!od.getDetailApproval());
+			deRepo.save(od);
+			return "Success";
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "Failure";
+		}
+	}
+}
+
+```
+
+</details>
+
+
+ 
 ### 4. 공공 데이터를 활용(전국도서관표준데이터)_csv
 - 공공데이터 포털에서 해당 데이터를 저장 후 csv 데이터를 list에 담은 후 DB에 저장
 
