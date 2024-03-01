@@ -303,14 +303,78 @@ public class CrawlingYes24 {
    text
   
  [코드 보러 가기]()
-### 4. 공공 데이터를 활용하여 도서관 위치 정보 수집
-    text
+### 4. 공공 데이터를 활용(전국도서관표준데이터)_csv
+- 공공데이터 포털에서 해당 데이터를 저장 후 csv 데이터를 list에 담은 후 DB에 저장
+
+<details>
+    <summary>코드 보기</summary>
+    
+```java
+@EnableScheduling
+@Service
+public class CSVParserExample {
+	@Autowired
+	private LibraryRepository libraryRepository;
+
+//	@PostConstruct // 서버재실행될때마다  메서드 작동 test
+//	@Scheduled(cron = "0 0 0 */1 * *")
+	public void test() { 
+	    libraryRepository.deleteAllInBatch(); // 전체삭제 서버재실행될때마다 삭제
+	    String csvFilePath = "src/main/resources/NationalLibraryStandardData.csv";
+	    try (CSVReader reader = new CSVReader( 
+	            new InputStreamReader(new FileInputStream(csvFilePath), StandardCharsets.UTF_8))) {
+	        List<String[]> libraryList = reader.readAll(); // CSV 파일을 읽어와서 리스트에 저장
+	        List<SeoulPublicLibrary> list = new ArrayList<>();
+	        for (String[] line : libraryList) { 
+	        	//for 문을 이용하여 build 방식으로 객체 생성후 DB에 저장 
+	            SeoulPublicLibrary seoulPublicLibrary = 
+	            		SeoulPublicLibrary.builder()
+	            			.lbrryNm(line[0])
+	            			.ctprvnNm(line[1])
+	            			.signguNm(line[2])
+	            			.lbrrySe(line[3])
+	            			.closeDay(line[4])
+	            			.weekdayOperOpenHhmm(line[5])
+	            			.weekdayOperCloseHhmm(line[6])
+	            			.satOperOperOpenHhmm(line[7])
+	            			.satOperCloseHhmm(line[8])
+	            			.holidayOperOpenHhmm(line[9])
+	            			.holidayCloseOpenHhmm(line[10])
+	            			.seatCo(line[11])
+	            			.bookCo(line[12])
+	            			.pblicCo(line[13])
+	            			.noneBookCo(line[14])
+	            			.lonCo(line[15])
+	            			.lonDayCnt(line[16])
+	            			.rdnmadr(line[17])
+	            			.operInstitutionNm(line[18])
+	            			.phoneNumber(line[19])
+	            			.plotAr(line[20])
+	            			.buldAr(line[21])
+	            			.homepageUrl(line[22])
+	            			.latitude(line[23])
+	            			.longitude(line[24])
+	            			.referenceDate(line[25])
+	            			.insttCode(line[26])
+	            			.build();
+	            System.out.println(seoulPublicLibrary);
+	            list.add(seoulPublicLibrary);
+	        } 
+	        // bookDTOList를 이용하여 데이터베이스에 저장
+	        libraryRepository.saveAll(list);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+}
+```	
+	
+</details>
   
-   [코드 보러 가기]()
-### 5. 카카오 맵 API를 통해 도서관 위치 표시
-    text
- 
-  [코드 보러 가기]()
+   [전체 코드 보러 가기](https://github.com/hnymon/final-backend/blob/master/src/main/java/com/web/service/CSVParserExample.java)
+   
+### 5. 카카오 맵 API를 통해 도서관 위치 표시 < 프론트이므로 프론트에서 정리 
+  [프론트엔드 보러 가기](https://github.com/hnymon/final-frontend)
 ### 6. 주문, 문의 내역 확인
  text
   
