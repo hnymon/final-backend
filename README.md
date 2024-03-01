@@ -455,45 +455,6 @@ public class CartServiceImpl implements CartService {
 	<summary>Controller 코드 보기</summary>
 
 ```java
-package com.web.controller;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.siot.IamportRestClient.IamportClient;
-import com.siot.IamportRestClient.exception.IamportResponseException;
-import com.siot.IamportRestClient.response.IamportResponse;
-import com.siot.IamportRestClient.response.Payment;
-import com.web.dto.DeliveryInfo;
-import com.web.dto.MyOrderDTO;
-import com.web.dto.MyOrderPageDTO;
-import com.web.dto.OrderAdminDTO;
-import com.web.dto.OrderDto;
-import com.web.service.OrderService;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
 @Slf4j
 public class OrderController {
@@ -512,22 +473,6 @@ public class OrderController {
     public void init() {
         this.iamportClient = new IamportClient(restApiKey, restApiSecret);
     }
-
-//    @PostMapping("/order/payment")
-//    public ResponseEntity<String> paymentComplete(@Login SessionUser sessionUser, @RequestBody List<OrderSaveDto> orderSaveDtos) throws IOException {
-//        String orderNumber = String.valueOf(orderSaveDtos.get(0).getOrderNumber());
-//        try {
-//            Long userId = sessionUser.getUserIdNo();
-//            paymentService.saveOrder(userId, orderSaveDtos);
-//            log.info("결제 성공 : 주문 번호 {}", orderNumber);
-//            return ResponseEntity.ok().build();
-//        } catch (RuntimeException e) {
-//            log.info("주문 상품 환불 진행 : 주문 번호 {}", orderNumber);
-//            String token = refundService.getToken(apiKey, secretKey);
-//            refundService.refundWithToken(token, orderNumber, e.getMessage());
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-//        }
-//    }
     
     @PostMapping("/order/add")
     public ResponseEntity<String> paymentComplete(@RequestBody OrderDto orderdto, @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
@@ -537,8 +482,6 @@ public class OrderController {
 			
 		} catch (RuntimeException e) {
           log.info("주문 상품 환불 진행 : 주문 번호 {}");
-//          String pToken = refundService.getToken(apiKey, secretKey);
-//          refundService.refundWithToken(token, orderNumber, e.getMessage());
           return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
       }
     }
@@ -561,55 +504,7 @@ public class OrderController {
     	return orderService.loadDeliveryList(token);
     }
     
-    @GetMapping("/order/loadMyOrder")
-    public MyOrderPageDTO loadMyOrder(@PageableDefault(size=10, sort="id", direction=Sort.Direction.DESC)Pageable pageable, 
-    		@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
-    	return orderService.loadMyOrder(pageable, token);
-    }
     
-    // 추가
-    @PostMapping("/adminOrder/getList")
-    public Map<String, Object> getOrderList() {
-    	Map<String, Object> map = new HashMap<>();
-    	try {
-				List<OrderAdminDTO> list = orderService.getOrderList();
-				map.put("orderList", list);
-				map.put("result", "Success");
-			return map;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	map.put("result", "Failure");
-    	return map;
-    }
-    @PostMapping("/adminOrder/getOrderDetail")
-    public Map<String, Object> getOrderDetail(@RequestBody OrderAdminDTO id) {
-    	System.out.println(id);
-    	System.out.println("////////////////////////////////////////////////");
-    	Map<String, Object> map = new HashMap<>();
-    	try {
-				List<OrderAdminDTO> list = orderService.getOrderDetailList(id.getId());
-				map.put("odt", list);
-				System.out.println(list);
-				map.put("result", "Success");
-			return map;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	map.put("result", "Failure");
-    	return map;
-    	
-    	
-    }
-    
-    @PostMapping("/adminOrder/approval")
-    public String oderDetailApproval(@RequestBody OrderAdminDTO dto) {
-    	System.out.println(dto);
-    	String res = orderService.approval(dto);
-    	return res;
-    }
 }
 
 ```
@@ -720,6 +615,155 @@ public class OrderServiceImpl implements OrderService{
 		return deliveryInfoList;
 	}
 	
+	
+}
+
+```
+
+</details>
+
+
+ 
+### 4. 공공 데이터를 활용(전국도서관표준데이터)_csv
+- 공공데이터 포털에서 해당 데이터를 저장 후 csv 데이터를 list에 담은 후 DB에 저장
+
+<details>
+    <summary>코드 보기</summary>
+    
+```java
+@EnableScheduling
+@Service
+public class CSVParserExample {
+	@Autowired
+	private LibraryRepository libraryRepository;
+
+//	@PostConstruct // 서버재실행될때마다  메서드 작동 test
+//	@Scheduled(cron = "0 0 0 */1 * *")
+	public void test() { 
+	    libraryRepository.deleteAllInBatch(); // 전체삭제 서버재실행될때마다 삭제
+	    String csvFilePath = "src/main/resources/NationalLibraryStandardData.csv";
+	    try (CSVReader reader = new CSVReader( 
+	            new InputStreamReader(new FileInputStream(csvFilePath), StandardCharsets.UTF_8))) {
+	        List<String[]> libraryList = reader.readAll(); // CSV 파일을 읽어와서 리스트에 저장
+	        List<SeoulPublicLibrary> list = new ArrayList<>();
+	        for (String[] line : libraryList) { 
+	        	//for 문을 이용하여 build 방식으로 객체 생성후 DB에 저장 
+	            SeoulPublicLibrary seoulPublicLibrary = 
+	            		SeoulPublicLibrary.builder()
+	            			.lbrryNm(line[0])
+	            			.ctprvnNm(line[1])
+	            			.signguNm(line[2])
+	            			.lbrrySe(line[3])
+	            			.closeDay(line[4])
+	            			.weekdayOperOpenHhmm(line[5])
+	            			.weekdayOperCloseHhmm(line[6])
+	            			.satOperOperOpenHhmm(line[7])
+	            			.satOperCloseHhmm(line[8])
+	            			.holidayOperOpenHhmm(line[9])
+	            			.holidayCloseOpenHhmm(line[10])
+	            			.seatCo(line[11])
+	            			.bookCo(line[12])
+	            			.pblicCo(line[13])
+	            			.noneBookCo(line[14])
+	            			.lonCo(line[15])
+	            			.lonDayCnt(line[16])
+	            			.rdnmadr(line[17])
+	            			.operInstitutionNm(line[18])
+	            			.phoneNumber(line[19])
+	            			.plotAr(line[20])
+	            			.buldAr(line[21])
+	            			.homepageUrl(line[22])
+	            			.latitude(line[23])
+	            			.longitude(line[24])
+	            			.referenceDate(line[25])
+	            			.insttCode(line[26])
+	            			.build();
+	            System.out.println(seoulPublicLibrary);
+	            list.add(seoulPublicLibrary);
+	        } 
+	        // bookDTOList를 이용하여 데이터베이스에 저장
+	        libraryRepository.saveAll(list);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+}
+```	
+	
+</details>
+  
+   [전체 코드 보러 가기](https://github.com/hnymon/final-backend/blob/master/src/main/java/com/web/service/CSVParserExample.java)
+   
+### 5. 카카오 맵 API를 통해 도서관 위치 표시 < 프론트이므로 프론트에서 정리 
+  [프론트엔드 보러 가기](https://github.com/hnymon/final-frontend)
+### 6. 주문, 문의 내역 확인
+- 주문 확인 Controller & ServiceImpl
+  
+<details>
+	<summary>Controller 코드 보기</summary>
+
+```java
+@RestController
+@Slf4j
+public class OrderController {
+	@GetMapping("/order/loadMyOrder")
+    public MyOrderPageDTO loadMyOrder(@PageableDefault(size=10, sort="id", direction=Sort.Direction.DESC)Pageable pageable, 
+    		@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token){
+    	return orderService.loadMyOrder(pageable, token);
+    }
+    
+    // 추가
+    @PostMapping("/adminOrder/getList")
+    public Map<String, Object> getOrderList() {
+    	Map<String, Object> map = new HashMap<>();
+    	try {
+				List<OrderAdminDTO> list = orderService.getOrderList();
+				map.put("orderList", list);
+				map.put("result", "Success");
+			return map;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	map.put("result", "Failure");
+    	return map;
+    }
+    @PostMapping("/adminOrder/getOrderDetail")
+    public Map<String, Object> getOrderDetail(@RequestBody OrderAdminDTO id) {
+    	Map<String, Object> map = new HashMap<>();
+    	try {
+				List<OrderAdminDTO> list = orderService.getOrderDetailList(id.getId());
+				map.put("odt", list);
+				System.out.println(list);
+				map.put("result", "Success");
+			return map;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	map.put("result", "Failure");
+    	return map;
+    }
+    
+    @PostMapping("/adminOrder/approval")
+    public String oderDetailApproval(@RequestBody OrderAdminDTO dto) {
+    	System.out.println(dto);
+    	String res = orderService.approval(dto);
+    	return res;
+    }
+}
+
+```
+
+</details>
+
+
+<details>
+	<summary>ServiceImpl 코드 보기</summary>
+
+```java
+@Service
+public class OrderServiceImpl implements OrderService{
 	@Override
 	public MyOrderPageDTO loadMyOrder(Pageable pageable, String token) {
 		Long memberNum = tService.getMemberNum(token);
@@ -802,83 +846,282 @@ public class OrderServiceImpl implements OrderService{
 </details>
 
 
- 
-### 4. 공공 데이터를 활용(전국도서관표준데이터)_csv
-- 공공데이터 포털에서 해당 데이터를 저장 후 csv 데이터를 list에 담은 후 DB에 저장
+- 문의 확인 Controller & ServiceImpl
 
 <details>
-    <summary>코드 보기</summary>
-    
+	<summary>Controller 코드 보기</summary>
+
 ```java
-@EnableScheduling
-@Service
-public class CSVParserExample {
+package com.web.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Sort;
+
+import com.web.domain.AdminCommentEntity;
+import com.web.domain.Member;
+import com.web.domain.OneToOneInquiryEntity;
+import com.web.dto.InquiryDTO;
+import com.web.service.OneToOneLnqueryService;
+import com.web.service.TokenService;
+
+@RestController
+@RequestMapping("/board")
+public class OneToOneInquiryController {
+
 	@Autowired
-	private LibraryRepository libraryRepository;
+	private OneToOneLnqueryService oneToOneLnqueryService;
+	@Autowired
+	private TokenService tockenService;
 
-//	@PostConstruct // 서버재실행될때마다  메서드 작동 test
-//	@Scheduled(cron = "0 0 0 */1 * *")
-	public void test() { 
-	    libraryRepository.deleteAllInBatch(); // 전체삭제 서버재실행될때마다 삭제
-	    String csvFilePath = "src/main/resources/NationalLibraryStandardData.csv";
-	    try (CSVReader reader = new CSVReader( 
-	            new InputStreamReader(new FileInputStream(csvFilePath), StandardCharsets.UTF_8))) {
-	        List<String[]> libraryList = reader.readAll(); // CSV 파일을 읽어와서 리스트에 저장
-	        List<SeoulPublicLibrary> list = new ArrayList<>();
-	        for (String[] line : libraryList) { 
-	        	//for 문을 이용하여 build 방식으로 객체 생성후 DB에 저장 
-	            SeoulPublicLibrary seoulPublicLibrary = 
-	            		SeoulPublicLibrary.builder()
-	            			.lbrryNm(line[0])
-	            			.ctprvnNm(line[1])
-	            			.signguNm(line[2])
-	            			.lbrrySe(line[3])
-	            			.closeDay(line[4])
-	            			.weekdayOperOpenHhmm(line[5])
-	            			.weekdayOperCloseHhmm(line[6])
-	            			.satOperOperOpenHhmm(line[7])
-	            			.satOperCloseHhmm(line[8])
-	            			.holidayOperOpenHhmm(line[9])
-	            			.holidayCloseOpenHhmm(line[10])
-	            			.seatCo(line[11])
-	            			.bookCo(line[12])
-	            			.pblicCo(line[13])
-	            			.noneBookCo(line[14])
-	            			.lonCo(line[15])
-	            			.lonDayCnt(line[16])
-	            			.rdnmadr(line[17])
-	            			.operInstitutionNm(line[18])
-	            			.phoneNumber(line[19])
-	            			.plotAr(line[20])
-	            			.buldAr(line[21])
-	            			.homepageUrl(line[22])
-	            			.latitude(line[23])
-	            			.longitude(line[24])
-	            			.referenceDate(line[25])
-	            			.insttCode(line[26])
-	            			.build();
-	            System.out.println(seoulPublicLibrary);
-	            list.add(seoulPublicLibrary);
-	        } 
-	        // bookDTOList를 이용하여 데이터베이스에 저장
-	        libraryRepository.saveAll(list);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+	@PostMapping("/InquiryArea")
+	public Map<String, Object> InquiryArea(
+			@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token,
+			@RequestBody OneToOneInquiryEntity inquiryEntity) {
+		System.out.println(inquiryEntity);
+		Member currentMember = tockenService.getMemberByMemberNum(token);
+		String res = oneToOneLnqueryService.InquiryArea(inquiryEntity, currentMember);
+		Map<String, Object> map = new HashMap<>();
+
+		map.put("result", res);
+		return map;
 	}
+
+	// 문의 전체 리스트
+	@PostMapping("/InquiryList")
+	public Map<String, Object> InquiryList(
+			@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token,
+			@PageableDefault(size = 10, page = 0, sort = "inquiryId", direction = Sort.Direction.DESC) Pageable pageable) {
+		Member memberNum = tockenService.getMemberByMemberNum(token);
+		Page<OneToOneInquiryEntity> paging = oneToOneLnqueryService.InquiryPaging(pageable, memberNum.getMemberNum());
+		oneToOneLnqueryService.InquiryPaging(pageable, memberNum.getMemberNum());
+		Map<String, Object> map = new HashMap<>();
+		map.put("paging", paging);
+		return map;
+
+	}
+
+	// 문의 처리중 리스트
+	@PostMapping("/UnInquiryList")
+	public Map<String, Object> UnInquiryList(
+			@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token,
+			@PageableDefault(size = 10, page = 0, sort = "inquiryId", direction = Sort.Direction.DESC) Pageable pageable) {
+		Member memberNum = tockenService.getMemberByMemberNum(token);
+		Page<OneToOneInquiryEntity> list = oneToOneLnqueryService.UnInquiryList(pageable, memberNum.getMemberNum());
+		Map<String, Object> map = new HashMap<>();
+		map.put("list", list);
+		return map;
+	}
+
+	// 문의 완료 리스트
+	@PostMapping("/OkInquiryList")
+	public Map<String, Object> OkInquiryList(
+			@RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token,
+			@PageableDefault(size = 10, page = 0, sort = "inquiryId", direction = Sort.Direction.DESC) Pageable pageable) {
+		Member memberNum = tockenService.getMemberByMemberNum(token);
+		Page<OneToOneInquiryEntity> list = oneToOneLnqueryService.OkInquiryList(pageable, memberNum.getMemberNum());
+		Map<String, Object> map = new HashMap<>();
+		map.put("list", list);
+		return map;
+	}
+
+	// 문의 전체 리스트
+	@GetMapping("/InquiryAllList")
+	public Map<String,Object> InquiryAllList (@PageableDefault(size = 10, page = 0, sort = "inquiryId", direction = Sort.Direction.DESC) Pageable pageable){
+		Page<InquiryDTO> list = oneToOneLnqueryService.InquiryAllList(pageable);
+		System.out.println(list);
+		Map<String,Object> map = new HashMap<>();
+	    map.put("list", list.getContent()); // 페이지의 내용을 리스트로 반환
+	    map.put("totalElements", list.getTotalElements()); // 전체 엘리먼트 수 반환
+	    map.put("totalPages", list.getTotalPages()); // 전체 페이지 수 반환
+	    map.put("currentPage", list.getNumber()); 
+		return map;
+	}
+	// 1대1 상세정보
+	@PostMapping("/InquiryDetail/{inquiryId}")
+	public OneToOneInquiryEntity LnqueryDetail(@PathVariable Long inquiryId) {
+		System.out.println("/////////"+inquiryId);
+		return oneToOneLnqueryService.InquiryDetail(inquiryId);
+	}
+
+	// admin 답변
+	@PostMapping("/AdminComment/{inquiryId}")
+	public AdminCommentEntity AdminComment(@PathVariable Long inquiryId,
+			@RequestBody AdminCommentEntity commentEntity) {
+		System.out.println("bhjvhvhvhhj" + commentEntity);
+		return oneToOneLnqueryService.AdminCommnet(inquiryId, commentEntity);
+	}
+
+	// 답변 뽑아내기
+	@PostMapping("AdminCommentList/{inquiryId}")
+	public Map<String, Object> AdminCommentList(@PathVariable Long inquiryId) {
+		System.out.println(inquiryId);
+		Map<String, Object> map = new HashMap<>();
+		List<AdminCommentEntity> list = oneToOneLnqueryService.AdminCommnetList(inquiryId);
+		map.put("list", list);
+		System.out.println(list);
+		return map;
+	}
+
 }
-```	
-	
+
+
+```
+
 </details>
-  
-   [전체 코드 보러 가기](https://github.com/hnymon/final-backend/blob/master/src/main/java/com/web/service/CSVParserExample.java)
-   
-### 5. 카카오 맵 API를 통해 도서관 위치 표시 < 프론트이므로 프론트에서 정리 
-  [프론트엔드 보러 가기](https://github.com/hnymon/final-frontend)
-### 6. 주문, 문의 내역 확인
- text
-  
-[코드 보러 가기]()
 
 
+<details>
+	<summary>ServiceImpl 코드 보기</summary>
+
+```java
+package com.web.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.web.domain.AdminCommentEntity;
+import com.web.domain.Member;
+import com.web.domain.OneToOneInquiryEntity;
+import com.web.dto.InquiryDTO;
+import com.web.repository.AdminCommentRepository;
+import com.web.repository.OneToOneLnqueryRepository;
+
+@Service
+public class OneToOneLnqueryServiceImpl implements OneToOneLnqueryService {
+	@Autowired
+	private OneToOneLnqueryRepository oneToOneInquiryRepository;
+	// 문의 답변
+	@Autowired
+	private AdminCommentRepository adminCommentRepository;
+
+	@Override
+	public String InquiryArea(OneToOneInquiryEntity inquiryEntity, Member currentMember) {
+		// TODO Auto-generated method stub
+		inquiryEntity.setMember(currentMember);
+		System.out.println(inquiryEntity);
+		if (inquiryEntity != null) {
+			inquiryEntity.setInquiryStatus("처리중");
+		}
+		oneToOneInquiryRepository.save(inquiryEntity);
+		return "";
+	}
+
+	// USER 전체 리스트
+	@Override
+	public Page<OneToOneInquiryEntity> InquiryPaging(Pageable pageable, Long memberNum) {
+		// TODO Auto-generated method stub
+		Page<OneToOneInquiryEntity> paging = oneToOneInquiryRepository.findAllByMemberMemberNum(pageable, memberNum);
+		return paging;
+	}
+
+	// 이건 몰라 시발
+	@Override
+	public List<OneToOneInquiryEntity> getList(Long emberNum) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	// 처리중인 리스트
+	@Override
+	public Page<OneToOneInquiryEntity> UnInquiryList(Pageable pageable, Long memberNum) {
+		// TODO Auto-generated method stub
+		Page<OneToOneInquiryEntity> paging = oneToOneInquiryRepository
+				.findAllByMemberMemberNumAndInquiryStatus(pageable, memberNum, "처리중");
+		return paging;
+	}
+
+	// 완료 처리 리스트
+	@Override
+	public Page<OneToOneInquiryEntity> OkInquiryList(Pageable pageable, Long memberNum) {
+		// TODO Auto-generated method stub
+		Page<OneToOneInquiryEntity> paging = oneToOneInquiryRepository
+				.findAllByMemberMemberNumAndInquiryStatus(pageable, memberNum, "답변완료");
+		return paging;
+	}
+
+	// ADMIN 전체 리스트
+	@Override
+	public Page<InquiryDTO> InquiryAllList(Pageable pageable) {
+		// TODO Auto-generated method stub
+		Page<OneToOneInquiryEntity> paging = oneToOneInquiryRepository.findAll(pageable);
+		return paging.map(entity -> {
+			InquiryDTO dto = new InquiryDTO();
+			dto.setInquiryId(entity.getInquiryId());
+			dto.setInquirySubject(entity.getInquirySubject());
+			dto.setInquiryType(entity.getInquiryType());
+			dto.setInquiryContent(entity.getInquiryContent());
+			dto.setInquiryDate(entity.getInquiryDate());
+			dto.setInquiryStatus(entity.getInquiryStatus());
+			dto.setMember(entity.getMember());
+			// 회원 정보는 제외
+			return dto;
+		});
+	}
+
+	// 1대1 상세정보
+	@Override
+	public OneToOneInquiryEntity InquiryDetail(Long inquiryId) {
+		// TODO Auto-generated method stub
+		Optional<OneToOneInquiryEntity> optional = oneToOneInquiryRepository.findById(inquiryId);
+		System.out.println("optional" + optional);
+		return optional.get();
+	}
+
+	// 1대1 문의 답변
+	@Override
+	public AdminCommentEntity AdminCommnet(Long inquiryId, AdminCommentEntity commentEntity) {
+		// 해당 문의 조회
+		OneToOneInquiryEntity inquiry = oneToOneInquiryRepository.findById(inquiryId)
+				.orElseThrow(() -> new EntityNotFoundException("Entity with id " + inquiryId + " not found"));
+
+		// 답변 작성 시 해당 문의 상태를 업데이트
+		inquiry.setInquiryStatus("답변완료");
+
+		// 관련 문의 엔터티 저장
+		OneToOneInquiryEntity updatedInquiry = oneToOneInquiryRepository.save(inquiry);
+
+		// 답변 정보에 관련 문의 ID 설정
+		commentEntity.setInquiryId(inquiryId);
+		// 답변 정보 저장
+		AdminCommentEntity savedCommentEntity = adminCommentRepository.save(commentEntity);
+
+		return savedCommentEntity; // 저장된 답변 정보 반환
+	}
+
+	@Override
+	public List<AdminCommentEntity> AdminCommnetList(Long inquiryId) {
+		// TODO Auto-generated method stub
+		List<AdminCommentEntity> list = adminCommentRepository.findByInquiryId(inquiryId);
+		return list;
+	}
+
+}
+
+
+```
+
+</details>
 
