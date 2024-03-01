@@ -28,7 +28,7 @@ public class CrawlingAladin {
 	private BookCrawlingRepository bookCrawlingRepository;
 	
 //	@Scheduled(cron = "0/30 * * * * *") // 30초
-	@Scheduled(cron = "0 0 */1 * * *")  // 1시간
+	@Scheduled(cron = "0 0 */6 * * *")  // 1시간
 //	@PostConstruct    					// 서버 재실행시 크롤링
 	public void testCrawling() {
 		List<BookCrawling> newBookList = bookCrawlingRepository.findAllByType("newBookAladin");

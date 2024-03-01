@@ -35,11 +35,11 @@ public class BookController {
 	
 	@Autowired
 	private CommentRepository commentRepository;
-	@Value("${myapp.naver.api.client-name}")
+	@Value("${spring.security.oauth2.client.registration.naver.client-id}")
 	private String CLIENT_ID;
-	@Value("${myapp.naver.api.client-secret}")
+	@Value("${spring.security.oauth2.client.registration.naver.client-secret}")
 	private String CLIENT_SECRET;
-	@Value("${myapp.kakao.api.secret-key}")
+	@Value("${spring.security.oauth2.client.registration.kakao.client-id}")
 	private String SECRET_KEY;
 	
 	// 네이버 책검색 api List

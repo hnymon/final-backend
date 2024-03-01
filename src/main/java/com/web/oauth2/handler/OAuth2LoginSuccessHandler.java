@@ -52,7 +52,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 mRepo.save(findMember);
                 
                 
-                response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000/login/callback")
+                response.sendRedirect(UriComponentsBuilder.fromUriString("http://www.starbook.p-e.kr/login/callback")
                 		.queryParam("accessToken", accessToken)
                 		.queryParam("refreshToken", refreshToken)
                 		.build()
@@ -66,7 +66,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             	findMember.updateRefreshToken(refreshToken);
                 
                 
-            	response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000/login/callback")
+            	response.sendRedirect(UriComponentsBuilder.fromUriString("http://www.starbook.p-e.kr/login/callback")
                 		.queryParam("accessToken", accessToken)
                 		.queryParam("refreshToken", refreshToken)
                 		.build()

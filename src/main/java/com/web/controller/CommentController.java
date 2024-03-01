@@ -87,6 +87,14 @@ public class CommentController {
 	    map.put("member", currentMember.getMemberNum());
 		return map;
 	} 
+	@PostMapping("/CommentList2")
+	public Map<String,Object> CommentList2(@RequestBody CommentDTO commentDTO) {
+		System.out.println("오는중??");
+		List<CommentDTO> list = commentService.getComments(commentDTO.getIsbn());
+		Map<String,Object> map = new HashMap<>();
+		map.put("list", list);
+		return map;
+	} 
 	 
 	@DeleteMapping("/CommentDelete/{commentId}")
 	public String CommentDelete(@PathVariable Long commentId) {

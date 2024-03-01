@@ -28,7 +28,7 @@ public class CrawlingYes24 {
 	private BookCrawlingRepository bookCrawlingRepository;
 	 
 //	@Scheduled(cron = "0/30 * * * * *") // 30초
-	@Scheduled(cron = "0 0 */1 * * *") // 1시간
+	@Scheduled(cron = "0 0 */6 * * *") // 1시간
 //	@PostConstruct
 	public void testCrawling() {
 		List<BookCrawling> todayBookYes24List = bookCrawlingRepository.findAllByType("todayBookYes24");
@@ -96,7 +96,6 @@ public class CrawlingYes24 {
 	        // 크레마샵 화제의 책
 	        Elements popularBooks = document.select(".bookClubSet li");
 	        for(Element element : popularBooks) {
-	        	System.out.println(element);
 	        	cnt ++;
 	        	String bookName = element.select(".goods_name").text();
 	        	String bookImg = element.select("img").attr("data-original");
