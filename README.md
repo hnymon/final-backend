@@ -854,34 +854,6 @@ public class OrderServiceImpl implements OrderService{
 	<summary>Controller 코드 보기</summary>
 
 ```java
-package com.web.controller;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.data.domain.Sort;
-
-import com.web.domain.AdminCommentEntity;
-import com.web.domain.Member;
-import com.web.domain.OneToOneInquiryEntity;
-import com.web.dto.InquiryDTO;
-import com.web.service.OneToOneLnqueryService;
-import com.web.service.TokenService;
-
 @RestController
 @RequestMapping("/board")
 public class OneToOneInquiryController {
@@ -992,25 +964,6 @@ public class OneToOneInquiryController {
 	<summary>ServiceImpl 코드 보기</summary>
 
 ```java
-package com.web.service;
-
-import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.EntityNotFoundException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import com.web.domain.AdminCommentEntity;
-import com.web.domain.Member;
-import com.web.domain.OneToOneInquiryEntity;
-import com.web.dto.InquiryDTO;
-import com.web.repository.AdminCommentRepository;
-import com.web.repository.OneToOneLnqueryRepository;
-
 @Service
 public class OneToOneLnqueryServiceImpl implements OneToOneLnqueryService {
 	@Autowired
