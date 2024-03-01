@@ -1,7 +1,7 @@
-[4조_별책빵(윤범헌,이아현,김건휘)_pdf.pdf](https://github.com/hnymon/final-backend/files/14458211/4._._pdf.pdf)
-
 # 📖 별책빵
 > 국비 파이널 프로젝트
+> 
+> http://www.starbook.p-e.kr/
 > 
 > 온라인 서점 + 내 위치를 기반으로 도서관 찾아가기
 
