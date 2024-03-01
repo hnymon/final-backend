@@ -55,7 +55,7 @@ public class CSVParserExample {
 	
 	
 //	bulid 방식
-//	@PostConstruct // 서버재실행될때마다  메서드 작동
+//	@PostConstruct // 서버재실행될때마다  메서드 작동 test
 //	@Scheduled(cron = "0 0 0 */1 * *")
 	public void test() { 
 	    libraryRepository.deleteAllInBatch(); // 전체삭제 서버재실행될때마다 삭제
